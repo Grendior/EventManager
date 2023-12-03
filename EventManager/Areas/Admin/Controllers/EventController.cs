@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EventManager.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class EventController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
