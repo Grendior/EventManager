@@ -4,6 +4,7 @@ using EventManager.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManager.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231203054155_AddIdentityTables")]
+    partial class AddIdentityTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,29 +54,29 @@ namespace EventManager.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("280871f9-d272-466c-8dff-de3fc131ea60"),
+                            Id = new Guid("95a301ac-2a9c-4fb2-9157-3f274b8dd8b9"),
                             Capacity = 30,
-                            Date = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5427),
-                            EndTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5471),
-                            StartTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5470),
+                            Date = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7628),
+                            EndTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7675),
+                            StartTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7674),
                             Title = "Tytuł Wydarzenia"
                         },
                         new
                         {
-                            Id = new Guid("e77ccb6f-8d43-410f-81db-476c5e4bec12"),
+                            Id = new Guid("2d5d64d3-d7f7-4222-a5f1-69e92940cb95"),
                             Capacity = 40,
-                            Date = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5475),
-                            EndTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5477),
-                            StartTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5476),
+                            Date = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7679),
+                            EndTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7681),
+                            StartTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7680),
                             Title = "Tytuł Wydarzenia 2"
                         },
                         new
                         {
-                            Id = new Guid("61a47fab-79d4-426c-b777-fc90197da4b0"),
+                            Id = new Guid("57fa9b48-99f2-43a7-9203-fc030f5210f2"),
                             Capacity = 50,
-                            Date = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5479),
-                            EndTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5481),
-                            StartTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5480),
+                            Date = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7683),
+                            EndTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7685),
+                            StartTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7684),
                             Title = "Tytuł Wydarzenia 3"
                         });
                 });
@@ -142,11 +145,6 @@ namespace EventManager.DataAccess.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -198,10 +196,6 @@ namespace EventManager.DataAccess.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -232,10 +226,12 @@ namespace EventManager.DataAccess.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -272,10 +268,12 @@ namespace EventManager.DataAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -283,21 +281,6 @@ namespace EventManager.DataAccess.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("EventManager.Models.ApplicationUser", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

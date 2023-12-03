@@ -13,6 +13,7 @@ namespace EventManager.DataAccess
         }
 
         public DbSet<Event> Events { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

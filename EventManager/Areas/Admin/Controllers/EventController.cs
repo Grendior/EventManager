@@ -1,10 +1,13 @@
 ﻿using EventManager.DataAccess.Repository.IRepository;
 using EventManager.Models;
+using EventManager.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventManager.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class EventController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
