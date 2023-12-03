@@ -13,7 +13,8 @@ namespace EventManager.Models
         public DateTime EndTime { get; set; }
         public int Capacity { get; set; }
 
-        /// ForeignKey
-        //public int Creator_Id { get; set; }
+        //public Guid? CreatorId { get; set; }
+        //[ForeignKey(nameof(CreatorId))]
+        //public User Creator { get; set; }
     }
 }

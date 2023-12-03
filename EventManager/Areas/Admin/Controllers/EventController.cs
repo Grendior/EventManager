@@ -1,20 +1,20 @@
-﻿using EventManager.DataAccess;
+﻿using EventManager.DataAccess.Repository.IRepository;
 using EventManager.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EventManager.Controllers
+namespace EventManager.Areas.Admin.Controllers
 {
     public class EventController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
-        public EventController(ApplicationDbContext dbContext)
+        private readonly IUnitOfWork _unitOfWork;
+        public EventController(IUnitOfWork unitOfWork)
         {
-            _dbContext = dbContext;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            var objEventList = _dbContext.Events.ToList();
+            var objEventList = _unitOfWork.Event.GetAll().ToList();
             return View(objEventList);
         }
 
@@ -31,8 +31,8 @@ namespace EventManager.Controllers
                 return View();
             }
             TempData["success"] = "Testowanie notyfikacji";
-            _dbContext.Events.Add(eventObj);
-            _dbContext.SaveChanges();
+            _unitOfWork.Event.Add(eventObj);
+            _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
@@ -42,7 +42,7 @@ namespace EventManager.Controllers
             {
                 return NotFound();
             }
-            var eventFromDb = _dbContext.Events.FirstOrDefault(x => x.Id == id);
+            var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
             if (eventFromDb == null)
             {
                 return NotFound();
@@ -59,8 +59,8 @@ namespace EventManager.Controllers
                 return View();
             }
 
-            _dbContext.Events.Update(eventObj);
-            _dbContext.SaveChanges();
+            _unitOfWork.Event.Update(eventObj);
+            _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
@@ -71,7 +71,7 @@ namespace EventManager.Controllers
                 return NotFound();
             }
 
-            var eventFromDb = _dbContext.Events.FirstOrDefault(x => x.Id == id);
+            var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
             if (eventFromDb == null)
             {
                 return NotFound();
@@ -88,14 +88,14 @@ namespace EventManager.Controllers
                 return View();
             }
 
-            var eventFromDb = _dbContext.Events.FirstOrDefault(x => x.Id == id);
+            var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
             if (eventFromDb == null)
             {
                 return NotFound();
             }
 
-            _dbContext.Events.Remove(eventFromDb);
-            _dbContext.SaveChanges();
+            _unitOfWork.Event.Remove(eventFromDb);
+            _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
     }
