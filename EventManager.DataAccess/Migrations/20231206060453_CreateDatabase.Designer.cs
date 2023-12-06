@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManager.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231203054155_AddIdentityTables")]
-    partial class AddIdentityTables
+    [Migration("20231206060453_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,8 @@ namespace EventManager.DataAccess.Migrations
 
             modelBuilder.Entity("EventManager.Models.Event", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
@@ -54,31 +53,60 @@ namespace EventManager.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("95a301ac-2a9c-4fb2-9157-3f274b8dd8b9"),
+                            Id = "f3554462-2d33-406d-851e-429a5bc4111e",
                             Capacity = 30,
-                            Date = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7628),
-                            EndTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7675),
-                            StartTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7674),
+                            Date = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3800),
+                            EndTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3839),
+                            StartTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3838),
                             Title = "Tytuł Wydarzenia"
                         },
                         new
                         {
-                            Id = new Guid("2d5d64d3-d7f7-4222-a5f1-69e92940cb95"),
+                            Id = "63723907-2db2-457a-b1d8-15ef9cbd99c1",
                             Capacity = 40,
-                            Date = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7679),
-                            EndTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7681),
-                            StartTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7680),
+                            Date = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3843),
+                            EndTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3846),
+                            StartTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3845),
                             Title = "Tytuł Wydarzenia 2"
                         },
                         new
                         {
-                            Id = new Guid("57fa9b48-99f2-43a7-9203-fc030f5210f2"),
+                            Id = "ec88f836-5c57-40cd-a5f6-b202b1b28194",
                             Capacity = 50,
-                            Date = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7683),
-                            EndTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7685),
-                            StartTime = new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7684),
+                            Date = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3848),
+                            EndTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3850),
+                            StartTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3849),
                             Title = "Tytuł Wydarzenia 3"
                         });
+                });
+
+            modelBuilder.Entity("EventManager.Models.EventParticipant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EventId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventParticipants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -145,6 +173,11 @@ namespace EventManager.DataAccess.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -196,6 +229,10 @@ namespace EventManager.DataAccess.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -226,12 +263,10 @@ namespace EventManager.DataAccess.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -268,12 +303,10 @@ namespace EventManager.DataAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -281,6 +314,36 @@ namespace EventManager.DataAccess.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("EventManager.Models.ApplicationUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
+            modelBuilder.Entity("EventManager.Models.EventParticipant", b =>
+                {
+                    b.HasOne("EventManager.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
+
+                    b.HasOne("EventManager.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
