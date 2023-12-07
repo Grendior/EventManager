@@ -8,7 +8,6 @@ namespace EventManager.Utils
 {
     public static class Enums
     {
-        // TODO: Do przemyślenia czy tyle statusów wystarczy
         public enum AssignmentStatus : int
         {
             None = 0,

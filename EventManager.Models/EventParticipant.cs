@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static EventManager.Utils.Enums;
 
 namespace EventManager.Models
 {
@@ -18,8 +18,6 @@ namespace EventManager.Models
         [ValidateNever]
         public ApplicationUser? User { get; set; }
 
-        public int Capacity { get; set; }
-
-        public int Status { get; set; }
+        public AssignmentStatus Status { get; set; }
     }
 }

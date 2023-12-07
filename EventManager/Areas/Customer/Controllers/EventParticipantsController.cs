@@ -4,6 +4,8 @@ using EventManager.Models;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using static EventManager.Utils.Enums;
+using static EventManager.Utils.TempDataInfos;
 
 namespace EventManager.Areas.Customer.Controllers
 {
@@ -12,11 +14,13 @@ namespace EventManager.Areas.Customer.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<EventParticipantsController> _logger;
 
-        public EventParticipantsController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork)
+        public EventParticipantsController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork, ILogger<EventParticipantsController> logger)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -27,29 +31,50 @@ namespace EventManager.Areas.Customer.Controllers
         }
 
         [HttpPost]
-        public IActionResult SignIn(string eventId)
+        public async Task<IActionResult> SignIn(string eventId)
         {
             string userId = string.Empty;
-            var user = _userManager.GetUserAsync(User).GetAwaiter().GetResult();
-            if (user != null)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
-                userId = user.Id;
+                TempData["error"] = UserNotFound;
+                return RedirectToAction(nameof(Index));
             }
 
-            if (!ModelState.IsValid)
+            var selectedEvent = _unitOfWork.Event.Get(e => e.Id == eventId);
+            if (selectedEvent == null)
             {
-                return View();
+                TempData["error"] = EventNotFound;
+                return RedirectToAction(nameof(Index));
             }
 
-            var newParticipant = new EventParticipant();
+            var existingParticipant = _unitOfWork.EventParticipant.Get(ep => ep.EventId == eventId && ep.UserId == userId);
+            if (existingParticipant != null)
+            {
+                TempData["error"] = EventParticipantsAlreadySigned;
+                return RedirectToAction(nameof(Index));
+            }
 
-            newParticipant.EventId = eventId;
-            newParticipant.UserId = userId;
-            newParticipant.Status = (int)Enums.AssignmentStatus.Applied;
+            var newParticipant = new EventParticipant
+            {
+                EventId = eventId,
+                UserId = user.Id,
+                Status = AssignmentStatus.Applied
+            };
 
-            _unitOfWork.EventParticipant.Add(newParticipant);
-            _unitOfWork.Save();
-            TempData["success"] = "You have been added to an event";
+            try
+            {
+                _unitOfWork.EventParticipant.Add(newParticipant);
+                _unitOfWork.Save();
+                TempData["success"] = EventParticipantsSigned;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception");
+                TempData["error"] = EventParticipantsError;
+                return RedirectToAction(nameof(Index));
+            }
+            
             return RedirectToAction(nameof(Index));
         }
     }
