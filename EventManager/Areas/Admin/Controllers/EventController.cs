@@ -89,7 +89,7 @@ namespace EventManager.Areas.Admin.Controllers
         {
             if (string.IsNullOrEmpty(id))
             {
-                return View();
+                return NotFound();
             }
 
             var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
