@@ -33,6 +33,14 @@ namespace EventManager.DataAccess.Repository
             return query.ToList();
         }
 
+        
+        public IEnumerable<T> GetAllFiltered(Expression<Func<T, bool>> filters)
+        {
+            IQueryable<T> query = _dbSet;
+            query = query.Where(filters);
+            return query.ToList();
+        }
+
         public void Remove(T entity)
         {
             _dbSet.Remove(entity);

@@ -1,9 +1,4 @@
 ﻿using EventManager.DataAccess.Repository.IRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EventManager.DataAccess.Repository
 {
@@ -11,10 +6,12 @@ namespace EventManager.DataAccess.Repository
     {
         private ApplicationDbContext _dbContext;
         public IEventRepository Event { get; private set; }
-        public UnitOfWork(ApplicationDbContext dbContext) 
-        { 
+        public IEventParticipantsRepository EventParticipant { get; private set; }
+        public UnitOfWork(ApplicationDbContext dbContext)
+        {
             _dbContext = dbContext;
             Event = new EventRepository(dbContext);
+            EventParticipant = new EventParticipantRepository(dbContext);
         }
 
         public void Save()

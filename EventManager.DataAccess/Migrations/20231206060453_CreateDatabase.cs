@@ -8,26 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EventManager.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdentityTables : Migration
+    public partial class CreateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "Events",
-                keyColumn: "Id",
-                keyValue: new Guid("8ae4fd63-5f1c-47f7-9f07-e053e28ead71"));
-
-            migrationBuilder.DeleteData(
-                table: "Events",
-                keyColumn: "Id",
-                keyValue: new Guid("a62b2f54-ade8-4a5c-8df0-0941608085f5"));
-
-            migrationBuilder.DeleteData(
-                table: "Events",
-                keyColumn: "Id",
-                keyValue: new Guid("eb97e843-3985-4341-ba35-0bcf5eda5176"));
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -47,6 +32,9 @@ namespace EventManager.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -65,6 +53,22 @@ namespace EventManager.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Events",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Capacity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Events", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -113,8 +117,8 @@ namespace EventManager.DataAccess.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -158,8 +162,8 @@ namespace EventManager.DataAccess.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -173,14 +177,40 @@ namespace EventManager.DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "EventParticipants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EventId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Capacity = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventParticipants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EventParticipants_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_EventParticipants_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "Events",
                 columns: new[] { "Id", "Capacity", "Date", "EndTime", "StartTime", "Title" },
                 values: new object[,]
                 {
-                    { new Guid("2d5d64d3-d7f7-4222-a5f1-69e92940cb95"), 40, new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7679), new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7681), new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7680), "Tytuł Wydarzenia 2" },
-                    { new Guid("57fa9b48-99f2-43a7-9203-fc030f5210f2"), 50, new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7683), new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7685), new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7684), "Tytuł Wydarzenia 3" },
-                    { new Guid("95a301ac-2a9c-4fb2-9157-3f274b8dd8b9"), 30, new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7628), new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7675), new DateTime(2023, 12, 3, 6, 41, 55, 339, DateTimeKind.Local).AddTicks(7674), "Tytuł Wydarzenia" }
+                    { "63723907-2db2-457a-b1d8-15ef9cbd99c1", 40, new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3843), new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3846), new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3845), "Tytuł Wydarzenia 2" },
+                    { "ec88f836-5c57-40cd-a5f6-b202b1b28194", 50, new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3848), new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3850), new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3849), "Tytuł Wydarzenia 3" },
+                    { "f3554462-2d33-406d-851e-429a5bc4111e", 30, new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3800), new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3839), new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3838), "Tytuł Wydarzenia" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -221,6 +251,16 @@ namespace EventManager.DataAccess.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventParticipants_EventId",
+                table: "EventParticipants",
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventParticipants_UserId",
+                table: "EventParticipants",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -242,35 +282,16 @@ namespace EventManager.DataAccess.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "EventParticipants");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
-            migrationBuilder.DeleteData(
-                table: "Events",
-                keyColumn: "Id",
-                keyValue: new Guid("2d5d64d3-d7f7-4222-a5f1-69e92940cb95"));
-
-            migrationBuilder.DeleteData(
-                table: "Events",
-                keyColumn: "Id",
-                keyValue: new Guid("57fa9b48-99f2-43a7-9203-fc030f5210f2"));
-
-            migrationBuilder.DeleteData(
-                table: "Events",
-                keyColumn: "Id",
-                keyValue: new Guid("95a301ac-2a9c-4fb2-9157-3f274b8dd8b9"));
-
-            migrationBuilder.InsertData(
-                table: "Events",
-                columns: new[] { "Id", "Capacity", "Date", "EndTime", "StartTime", "Title" },
-                values: new object[,]
-                {
-                    { new Guid("8ae4fd63-5f1c-47f7-9f07-e053e28ead71"), 40, new DateTime(2023, 12, 2, 13, 13, 56, 856, DateTimeKind.Local).AddTicks(9161), new DateTime(2023, 12, 2, 13, 13, 56, 856, DateTimeKind.Local).AddTicks(9166), new DateTime(2023, 12, 2, 13, 13, 56, 856, DateTimeKind.Local).AddTicks(9164), "Tytuł Wydarzenia 2" },
-                    { new Guid("a62b2f54-ade8-4a5c-8df0-0941608085f5"), 30, new DateTime(2023, 12, 2, 13, 13, 56, 856, DateTimeKind.Local).AddTicks(9098), new DateTime(2023, 12, 2, 13, 13, 56, 856, DateTimeKind.Local).AddTicks(9155), new DateTime(2023, 12, 2, 13, 13, 56, 856, DateTimeKind.Local).AddTicks(9153), "Tytuł Wydarzenia" },
-                    { new Guid("eb97e843-3985-4341-ba35-0bcf5eda5176"), 50, new DateTime(2023, 12, 2, 13, 13, 56, 856, DateTimeKind.Local).AddTicks(9171), new DateTime(2023, 12, 2, 13, 13, 56, 856, DateTimeKind.Local).AddTicks(9177), new DateTime(2023, 12, 2, 13, 13, 56, 856, DateTimeKind.Local).AddTicks(9174), "Tytuł Wydarzenia 3" }
-                });
+            migrationBuilder.DropTable(
+                name: "Events");
         }
     }
 }

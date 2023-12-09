@@ -40,9 +40,9 @@ namespace EventManager.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Edit(Guid? id)
+        public IActionResult Edit(string? id)
         {
-            if (!id.HasValue || id.Value == Guid.Empty)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
@@ -68,9 +68,9 @@ namespace EventManager.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(Guid? id)
+        public IActionResult Delete(string? id)
         {
-            if (!id.HasValue || id.Value == Guid.Empty)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
@@ -85,11 +85,11 @@ namespace EventManager.Areas.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePOST(Guid? id)
+        public IActionResult DeletePOST(string? id)
         {
-            if (!id.HasValue || id.Value == Guid.Empty)
+            if (string.IsNullOrEmpty(id))
             {
-                return View();
+                return NotFound();
             }
 
             var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);

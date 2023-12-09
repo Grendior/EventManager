@@ -24,9 +24,8 @@ namespace EventManager.DataAccess.Migrations
 
             modelBuilder.Entity("EventManager.Models.Event", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
@@ -51,31 +50,60 @@ namespace EventManager.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("280871f9-d272-466c-8dff-de3fc131ea60"),
+                            Id = "f3554462-2d33-406d-851e-429a5bc4111e",
                             Capacity = 30,
-                            Date = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5427),
-                            EndTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5471),
-                            StartTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5470),
+                            Date = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3800),
+                            EndTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3839),
+                            StartTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3838),
                             Title = "Tytuł Wydarzenia"
                         },
                         new
                         {
-                            Id = new Guid("e77ccb6f-8d43-410f-81db-476c5e4bec12"),
+                            Id = "63723907-2db2-457a-b1d8-15ef9cbd99c1",
                             Capacity = 40,
-                            Date = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5475),
-                            EndTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5477),
-                            StartTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5476),
+                            Date = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3843),
+                            EndTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3846),
+                            StartTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3845),
                             Title = "Tytuł Wydarzenia 2"
                         },
                         new
                         {
-                            Id = new Guid("61a47fab-79d4-426c-b777-fc90197da4b0"),
+                            Id = "ec88f836-5c57-40cd-a5f6-b202b1b28194",
                             Capacity = 50,
-                            Date = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5479),
-                            EndTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5481),
-                            StartTime = new DateTime(2023, 12, 3, 14, 28, 4, 65, DateTimeKind.Local).AddTicks(5480),
+                            Date = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3848),
+                            EndTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3850),
+                            StartTime = new DateTime(2023, 12, 6, 7, 4, 52, 676, DateTimeKind.Local).AddTicks(3849),
                             Title = "Tytuł Wydarzenia 3"
                         });
+                });
+
+            modelBuilder.Entity("EventManager.Models.EventParticipant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EventId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventParticipants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -298,6 +326,21 @@ namespace EventManager.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
+            modelBuilder.Entity("EventManager.Models.EventParticipant", b =>
+                {
+                    b.HasOne("EventManager.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
+
+                    b.HasOne("EventManager.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
