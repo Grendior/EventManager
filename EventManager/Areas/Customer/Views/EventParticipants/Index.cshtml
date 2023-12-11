@@ -22,7 +22,10 @@
                 <td>@item.StartTime</td>
                 <td>@item.EndTime</td>
                 <td>@item.Capacity</td>
-                <td class="text-center"><button type="button" onclick="signIn('@item.Id')" class="btn btn-lg btn-success">Sign in</button></td>
+                <td class="text-center">
+                    <button type="button" onclick="signIn('@item.Id')" class="btn btn-lg btn-success">Sign in</button>
+                    <a asp-area="Customer" asp-controller="EventDetails" asp-action="Index" asp-route-eventId="@item.Id" class="btn btn-lg btn-secondary">Details</a>
+                </td>
             </tr>
         }
     </tbody>
@@ -39,10 +42,9 @@
                 data: { eventId: id }, // data should be pass as object
                 success: function (result) {
                     alert('Successfully applied');
-                    console.log(result);
                 },
-                error: function() {
-                    alert('Failed to apply');
+                error: function(e) {
+                    alert('Failed to apply', e);
                 }
             })
         }

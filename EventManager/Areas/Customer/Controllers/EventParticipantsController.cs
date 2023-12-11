@@ -1,5 +1,4 @@
-﻿using EventManager.DataAccess.Repository;
-using EventManager.DataAccess.Repository.IRepository;
+﻿using EventManager.DataAccess.Repository.IRepository;
 using EventManager.Models;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Identity;
@@ -74,7 +73,7 @@ namespace EventManager.Areas.Customer.Controllers
                 TempData["error"] = EventParticipantsError;
                 return RedirectToAction(nameof(Index));
             }
-            
+
             return RedirectToAction(nameof(Index));
         }
     }

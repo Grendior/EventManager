@@ -14,6 +14,7 @@ namespace EventManager.Utils
             Applied = 1,
             Reserve = 2,
             Accepted = 3,
+            Declined = 4,
         }
     }
 }
