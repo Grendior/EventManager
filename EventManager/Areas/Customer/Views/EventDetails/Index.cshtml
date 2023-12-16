@@ -1,0 +1,133 @@
+﻿@model EventDetailsVM
+
+<h2>Event Details</h2>
+
+<div>
+    @Model.Event.Title
+</div>
+
+
+@if (User.IsInRole(SD.Role_Admin) && Model.Participants != null)
+{
+    <table id="participants_table" class="table table-hover table-primary table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">First name</th>
+
+                <th scope="col">Last name</th>
+
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr class="table-info">
+                <td colspan="3" class="text-center">Applied</td>
+            </tr>
+
+            @foreach (var item in Model.Participants.Where(x => x.Status == AssignmentStatus.Applied))
+            {
+                <tr>
+                    <td>@item.User?.FirstName</td>
+                   
+                    <td>@item.User?.LastName</td>
+                    
+                    <td class="text-center">
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Accepted))" class="btn btn-lg btn-success">Accept</button>
+                        
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Declined))" class="btn btn-lg btn-danger">Decline</button>
+                        
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Reserve))" class="btn btn-lg btn-warning">Add to reserve</button>
+                    </td>
+                </tr>
+            }
+
+            <tr class="table-success">
+                <td colspan="3" class="text-center">Accepted</td>
+            </tr>
+
+            @foreach (var item in Model.Participants.Where(x => x.Status == AssignmentStatus.Accepted))
+            {
+                <tr>
+                    <td>@item.User?.FirstName</td>
+
+                    <td>@item.User?.LastName</td>
+                    
+                    <td class="text-center">
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Accepted))" class="btn btn-lg btn-success">Accept</button>
+
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Declined))" class="btn btn-lg btn-danger">Decline</button>
+
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Reserve))" class="btn btn-lg btn-warning">Add to reserve</button>
+                    </td>
+                </tr>
+            }
+
+            <tr class="table-warning">
+                <td colspan="3" class="text-center">Reserved</td>
+            </tr>
+
+            @foreach (var item in Model.Participants.Where(x => x.Status == AssignmentStatus.Reserve))
+            {
+                <tr>
+                    <td>@item.User?.FirstName</td>
+
+                    <td>@item.User?.LastName</td>
+
+                    <td class="text-center">
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Accepted))" class="btn btn-lg btn-success">Accept</button>
+
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Declined))" class="btn btn-lg btn-danger">Decline</button>
+
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Reserve))" class="btn btn-lg btn-warning">Add to reserve</button>
+                    </td>
+                </tr>
+            }
+
+            <tr class="table-danger">
+                <td colspan="3" class="text-center">Declined</td>
+            </tr>
+
+            @foreach (var item in Model.Participants.Where(x => x.Status == AssignmentStatus.Declined))
+            {
+                <tr>
+                    <td>@item.User?.FirstName</td>
+
+                    <td>@item.User?.LastName</td>
+
+                    <td class="text-center">
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Accepted))" class="btn btn-lg btn-success">Accept</button>
+
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Declined))" class="btn btn-lg btn-danger">Decline</button>
+
+                        <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Reserve))" class="btn btn-lg btn-warning">Add to reserve</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+        $("#participants_table").dataTable();
+        });
+
+        function changeParticipationStatus(participationId, status) {
+            $.ajax({
+                type: 'PUT',
+                url: '/Customer/EventDetails/ChangeParticipationStatus',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                data: { participationId: participationId, status: status }, // data should be pass as object
+                success: function (result) {
+                    alert('Successfully changed status');
+                    // $("#participants_table").ajax.reload(); add dynamic data reload
+                },
+                error: function () {
+                    alert('Failed to change status');
+                }
+            })
+        }
+    </script>
+}

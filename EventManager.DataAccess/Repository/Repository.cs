@@ -20,24 +20,45 @@ namespace EventManager.DataAccess.Repository
             _dbSet.Add(entity);
         }
 
-        public T? Get(Expression<Func<T, bool>> filters)
+        public T? Get(Expression<Func<T, bool>> filters, string? includes = null)
         {
             IQueryable<T> query = _dbSet;
             query = query.Where(filters);
+            if (!string.IsNullOrEmpty(includes))
+            {
+                foreach (var item in includes.Split(',', StringSplitOptions.RemoveEmptyEntries))     
+                {
+                    query = query.Include(item);
+                }
+            }
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(string? includes = null)
         {
             IQueryable<T> query = _dbSet;
+            if (!string.IsNullOrEmpty(includes))
+            {
+                foreach (var item in includes.Split(',', StringSplitOptions.RemoveEmptyEntries))     
+                {
+                    query = query.Include(item);
+                }
+            }
             return query.ToList();
         }
 
         
-        public IEnumerable<T> GetAllFiltered(Expression<Func<T, bool>> filters)
+        public IEnumerable<T> GetAllFiltered(Expression<Func<T, bool>> filters, string? includes = null)
         {
             IQueryable<T> query = _dbSet;
             query = query.Where(filters);
+            if (!string.IsNullOrEmpty(includes))
+            {
+                foreach (var item in includes.Split(',', StringSplitOptions.RemoveEmptyEntries))     
+                {
+                    query = query.Include(item);
+                }
+            }
             return query.ToList();
         }
 
