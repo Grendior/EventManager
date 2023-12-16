@@ -1,0 +1,93 @@
+﻿@model List<EventParticipant>
+
+<table id="participants_table" class="table table-hover table-primary table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">First name</th>
+
+            <th scope="col">Last name</th>
+
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr class="table-info">
+            <td colspan="3" class="text-center">Applied</td>
+        </tr>
+
+        @foreach (var item in Model.Where(x => x.Status == AssignmentStatus.Applied))
+        {
+            <tr>
+                <td>@item.User?.FirstName</td>
+
+                <td>@item.User?.LastName</td>
+
+                <td class="text-center">
+                    <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Accepted))" class="btn btn-lg btn-success">Accept</button>
+
+                    <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Reserve))" class="btn btn-lg btn-warning">Add to reserve</button>
+
+                    <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Declined))" class="btn btn-lg btn-danger">Decline</button>
+                </td>
+            </tr>
+        }
+
+        <tr class="table-success">
+            <td colspan="3" class="text-center">Accepted</td>
+        </tr>
+
+        @foreach (var item in Model.Where(x => x.Status == AssignmentStatus.Accepted))
+        {
+            <tr>
+                <td>@item.User?.FirstName</td>
+
+                <td>@item.User?.LastName</td>
+
+                <td class="text-center">
+                    <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Reserve))" class="btn btn-lg btn-warning">Add to reserve</button>
+
+                    <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Declined))" class="btn btn-lg btn-danger">Decline</button>
+                </td>
+            </tr>
+        }
+
+        <tr class="table-warning">
+            <td colspan="3" class="text-center">Reserved</td>
+        </tr>
+
+        @foreach (var item in Model.Where(x => x.Status == AssignmentStatus.Reserve))
+        {
+            <tr>
+                <td>@item.User?.FirstName</td>
+
+                <td>@item.User?.LastName</td>
+
+                <td class="text-center">
+                    <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Accepted))" class="btn btn-lg btn-success">Accept</button>
+
+                    <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Declined))" class="btn btn-lg btn-danger">Decline</button>
+                </td>
+            </tr>
+        }
+
+        <tr class="table-danger">
+            <td colspan="3" class="text-center">Declined</td>
+        </tr>
+
+        @foreach (var item in Model.Where(x => x.Status == AssignmentStatus.Declined))
+        {
+            <tr>
+                <td>@item.User?.FirstName</td>
+
+                <td>@item.User?.LastName</td>
+
+                <td class="text-center">
+                    <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Accepted))" class="btn btn-lg btn-success">Accept</button>
+
+                    <button type="button" onclick="changeParticipationStatus(@item.Id, @((int)AssignmentStatus.Reserve))" class="btn btn-lg btn-warning">Add to reserve</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -44,6 +44,14 @@ namespace EventManager.Areas.Customer.Controllers
             return View(eventDetailsVM);
         }
 
+        
+        public IActionResult _EventParticipantsTable(string eventId)
+        {
+            // TODO: In case you came up with better way to refresh 
+            var Participants = _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventId, "User").ToList();
+            return PartialView("_EventParticipantsTable", Participants);
+        }
+
         [HttpPut]
         public IActionResult ChangeParticipationStatus(int participationId, int status)
         {
@@ -63,7 +71,7 @@ namespace EventManager.Areas.Customer.Controllers
             _unitOfWork.EventParticipant.Update(participation);
             _unitOfWork.Save();
 
-            return RedirectToAction(nameof(Index), new { participation.EventId });
+            return RedirectToAction(nameof(_EventParticipantsTable), new { participation.EventId });
         }
     }
 }

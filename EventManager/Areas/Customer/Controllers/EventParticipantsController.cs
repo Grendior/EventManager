@@ -3,6 +3,8 @@ using EventManager.Models;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Net.Mime;
 using static EventManager.Utils.Enums;
 using static EventManager.Utils.TempDataInfos;
 
@@ -32,26 +34,25 @@ namespace EventManager.Areas.Customer.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(string eventId)
         {
-            string userId = string.Empty;
             var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (user is null)
             {
-                TempData["error"] = UserNotFound;
-                return RedirectToAction(nameof(Index));
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content(UserNotFound, MediaTypeNames.Text.Plain);
             }
 
             var selectedEvent = _unitOfWork.Event.Get(e => e.Id == eventId);
-            if (selectedEvent == null)
+            if (selectedEvent is null)
             {
-                TempData["error"] = EventNotFound;
-                return RedirectToAction(nameof(Index));
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content(EventNotFound, MediaTypeNames.Text.Plain);
             }
 
-            var existingParticipant = _unitOfWork.EventParticipant.Get(ep => ep.EventId == eventId && ep.UserId == userId);
-            if (existingParticipant != null)
+            var existingParticipant = _unitOfWork.EventParticipant.Get(ep => ep.EventId == eventId && ep.UserId == user.Id);
+            if (existingParticipant is not null)
             {
-                TempData["error"] = EventParticipantsAlreadySigned;
-                return RedirectToAction(nameof(Index));
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content(EventParticipantsAlreadySigned, MediaTypeNames.Text.Plain);
             }
 
             var newParticipant = new EventParticipant
@@ -65,16 +66,15 @@ namespace EventManager.Areas.Customer.Controllers
             {
                 _unitOfWork.EventParticipant.Add(newParticipant);
                 _unitOfWork.Save();
-                TempData["success"] = EventParticipantsSigned;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception");
-                TempData["error"] = EventParticipantsError;
-                return RedirectToAction(nameof(Index));
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content(EventParticipantsError, MediaTypeNames.Text.Plain);
             }
 
-            return RedirectToAction(nameof(Index));
+            return Content(EventParticipantsSigned, MediaTypeNames.Text.Plain);
         }
     }
 }
