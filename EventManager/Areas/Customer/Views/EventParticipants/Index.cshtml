@@ -39,12 +39,12 @@
                 type: 'POST',
                 url: '/Customer/EventParticipants/SignIn',
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                data: { eventId: id }, // data should be pass as object
+                data: { eventId: id },
                 success: function (result) {
-                    alert('Successfully applied');
+                    alert(result);
                 },
-                error: function() {
-                    alert('Failed to apply');
+                error: function (error) {
+                    alert(error.responseText);
                 }
             })
         }
