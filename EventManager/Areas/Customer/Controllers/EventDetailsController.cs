@@ -26,7 +26,7 @@ namespace EventManager.Areas.Customer.Controllers
         {
             var eventObj = _unitOfWork.Event.Get(x => x.Id == eventId);
 
-            if (eventObj == null)
+            if (eventObj is null)
             {
                 return NotFound();
             }
@@ -54,7 +54,7 @@ namespace EventManager.Areas.Customer.Controllers
             }
 
             var participation = _unitOfWork.EventParticipant.Get(x => x.Id == participationId);
-            if (participation == null)
+            if (participation is null)
             {
                 return NotFound();
             }
