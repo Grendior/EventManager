@@ -4,6 +4,7 @@ using EventManager.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManager.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231216173833_UpdateEventAddOccupatiedAndCreator")]
+    partial class UpdateEventAddOccupatiedAndCreator
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,7 +30,7 @@ namespace EventManager.DataAccess.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("Capacity")
+                    b.Property<int>("Capacity")
                         .HasColumnType("int");
 
                     b.Property<string>("CreatorId")
@@ -58,32 +61,29 @@ namespace EventManager.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "7d8fa6e8-2e33-40cc-81ff-d63f16f6cc5f",
+                            Id = "f647de77-2910-4345-a77c-4645c8b0adb1",
                             Capacity = 30,
-                            Date = new DateTime(2023, 12, 16, 19, 22, 51, 832, DateTimeKind.Local).AddTicks(6504),
-                            EndTime = new DateTime(2023, 12, 16, 19, 22, 51, 832, DateTimeKind.Local).AddTicks(6546),
-                            Occupied = 0,
-                            StartTime = new DateTime(2023, 12, 16, 19, 22, 51, 832, DateTimeKind.Local).AddTicks(6545),
+                            Date = new DateTime(2023, 12, 16, 18, 38, 32, 981, DateTimeKind.Local).AddTicks(508),
+                            EndTime = new DateTime(2023, 12, 16, 18, 38, 32, 981, DateTimeKind.Local).AddTicks(552),
+                            StartTime = new DateTime(2023, 12, 16, 18, 38, 32, 981, DateTimeKind.Local).AddTicks(551),
                             Title = "Tytuł Wydarzenia"
                         },
                         new
                         {
-                            Id = "80912791-4de4-4f5f-907c-193b9c110ef4",
+                            Id = "f4ebd3e6-5491-4816-bafd-ef313ed5a967",
                             Capacity = 40,
-                            Date = new DateTime(2023, 12, 16, 19, 22, 51, 832, DateTimeKind.Local).AddTicks(6551),
-                            EndTime = new DateTime(2023, 12, 16, 19, 22, 51, 832, DateTimeKind.Local).AddTicks(6553),
-                            Occupied = 0,
-                            StartTime = new DateTime(2023, 12, 16, 19, 22, 51, 832, DateTimeKind.Local).AddTicks(6552),
+                            Date = new DateTime(2023, 12, 16, 18, 38, 32, 981, DateTimeKind.Local).AddTicks(555),
+                            EndTime = new DateTime(2023, 12, 16, 18, 38, 32, 981, DateTimeKind.Local).AddTicks(557),
+                            StartTime = new DateTime(2023, 12, 16, 18, 38, 32, 981, DateTimeKind.Local).AddTicks(556),
                             Title = "Tytuł Wydarzenia 2"
                         },
                         new
                         {
-                            Id = "10b73d51-5de3-41fe-a59b-7f8ce78f47c2",
+                            Id = "f1b54f99-ec5c-48ae-a262-13e857582ff8",
                             Capacity = 50,
-                            Date = new DateTime(2023, 12, 16, 19, 22, 51, 832, DateTimeKind.Local).AddTicks(6555),
-                            EndTime = new DateTime(2023, 12, 16, 19, 22, 51, 832, DateTimeKind.Local).AddTicks(6557),
-                            Occupied = 0,
-                            StartTime = new DateTime(2023, 12, 16, 19, 22, 51, 832, DateTimeKind.Local).AddTicks(6556),
+                            Date = new DateTime(2023, 12, 16, 18, 38, 32, 981, DateTimeKind.Local).AddTicks(560),
+                            EndTime = new DateTime(2023, 12, 16, 18, 38, 32, 981, DateTimeKind.Local).AddTicks(562),
+                            StartTime = new DateTime(2023, 12, 16, 18, 38, 32, 981, DateTimeKind.Local).AddTicks(561),
                             Title = "Tytuł Wydarzenia 3"
                         });
                 });

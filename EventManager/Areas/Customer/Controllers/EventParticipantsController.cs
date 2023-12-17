@@ -48,6 +48,8 @@ namespace EventManager.Areas.Customer.Controllers
                 return Content(EventNotFound, MediaTypeNames.Text.Plain);
             }
 
+            selectedEvent.Occupied += 1;
+
             var existingParticipant = _unitOfWork.EventParticipant.Get(ep => ep.EventId == eventId && ep.UserId == user.Id);
             if (existingParticipant is not null)
             {
@@ -65,6 +67,7 @@ namespace EventManager.Areas.Customer.Controllers
             try
             {
                 _unitOfWork.EventParticipant.Add(newParticipant);
+                _unitOfWork.Event.Update(selectedEvent);
                 _unitOfWork.Save();
             }
             catch (Exception ex)
