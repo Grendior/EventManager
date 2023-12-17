@@ -21,7 +21,7 @@
                 <td>@item.Title</td>
                 <td>@item.StartTime</td>
                 <td>@item.EndTime</td>
-                <td>@item.Capacity</td>
+                <td>@(item.Occupied)/@(item.Capacity)</td>
                 <td class="text-center">
                     <button type="button" onclick="signIn('@item.Id')" class="btn btn-lg btn-success">Sign in</button>
                     <a asp-area="Customer" asp-controller="EventDetails" asp-action="Index" asp-route-eventId="@item.Id" class="btn btn-lg btn-secondary">Details</a>
@@ -42,6 +42,7 @@
                 data: { eventId: id },
                 success: function (result) {
                     alert(result);
+                    location.reload();
                 },
                 error: function (error) {
                     alert(error.responseText);

@@ -21,9 +21,9 @@ namespace EventManager.DataAccess
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Event>().HasData(
-                new { Id = Guid.NewGuid().ToString(), Title = "Tytuł Wydarzenia", Date = DateTime.Now, StartTime = DateTime.Now, EndTime = DateTime.Now, Capacity = 30 },
-                new { Id = Guid.NewGuid().ToString(), Title = "Tytuł Wydarzenia 2", Date = DateTime.Now, StartTime = DateTime.Now, EndTime = DateTime.Now, Capacity = 40 },
-                new { Id = Guid.NewGuid().ToString(), Title = "Tytuł Wydarzenia 3", Date = DateTime.Now, StartTime = DateTime.Now, EndTime = DateTime.Now, Capacity = 50 }
+                new { Id = Guid.NewGuid().ToString(), Title = "Tytuł Wydarzenia", Date = DateTime.Now, StartTime = DateTime.Now, EndTime = DateTime.Now, Capacity = 30, Occupied = 0 },
+                new { Id = Guid.NewGuid().ToString(), Title = "Tytuł Wydarzenia 2", Date = DateTime.Now, StartTime = DateTime.Now, EndTime = DateTime.Now, Capacity = 40, Occupied = 0 },
+                new { Id = Guid.NewGuid().ToString(), Title = "Tytuł Wydarzenia 3", Date = DateTime.Now, StartTime = DateTime.Now, EndTime = DateTime.Now, Capacity = 50, Occupied = 0 }
             );
         }
     }

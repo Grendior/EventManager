@@ -44,7 +44,7 @@ namespace EventManager.Areas.Customer.Controllers
             return View(eventDetailsVM);
         }
 
-        
+
         public IActionResult _EventParticipantsTable(string eventId)
         {
             // TODO: In case you came up with better way to refresh 
