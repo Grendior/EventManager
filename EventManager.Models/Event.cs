@@ -10,6 +10,7 @@ namespace EventManager.Models
         public string? Id { get; set; }
         [Required]
         public string? Title { get; set; }
+        public string? Description { get; set; }
         public DateTime Date { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
