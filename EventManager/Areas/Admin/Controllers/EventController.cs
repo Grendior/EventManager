@@ -22,32 +22,15 @@ namespace EventManager.Areas.Admin.Controllers
             return View(objEventList);
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(Event eventObj)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
-            TempData["success"] = "Testowanie notyfikacji";
-            _unitOfWork.Event.Add(eventObj);
-            _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
-        }
-
-        public IActionResult Edit(string? id)
+        public IActionResult Upsert(string? id)
         {
             if (string.IsNullOrEmpty(id))
             {
-                return NotFound();
+                return View(new Event());
             }
+
             var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
-            if (eventFromDb == null)
+            if (eventFromDb is null)
             {
                 return NotFound();
             }
@@ -56,17 +39,27 @@ namespace EventManager.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Event eventObj)
+        public IActionResult Upsert(Event eventObj)
         {
             if (!ModelState.IsValid)
             {
                 return View();
             }
 
+            if (string.IsNullOrEmpty(eventObj.Id))
+            {
+                eventObj.Id = Guid.NewGuid().ToString();
+
+                _unitOfWork.Event.Add(eventObj);
+                _unitOfWork.Save();
+                return RedirectToAction(nameof(Index));
+            }
+
             _unitOfWork.Event.Update(eventObj);
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
+
 
         public IActionResult Delete(string? id)
         {
@@ -76,7 +69,7 @@ namespace EventManager.Areas.Admin.Controllers
             }
 
             var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
-            if (eventFromDb == null)
+            if (eventFromDb is null)
             {
                 return NotFound();
             }
@@ -93,7 +86,7 @@ namespace EventManager.Areas.Admin.Controllers
             }
 
             var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
-            if (eventFromDb == null)
+            if (eventFromDb is null)
             {
                 return NotFound();
             }
