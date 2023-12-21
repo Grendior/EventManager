@@ -1,5 +1,6 @@
 ﻿using EventManager.DataAccess.Repository.IRepository;
 using EventManager.Models;
+using EventManager.Models.ViewModels;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +27,14 @@ namespace EventManager.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            var events = _unitOfWork.Event.GetAll().ToList();
+            var eventsVM = new EventsVM
+            {
+                UserId = _userManager.GetUserId(User),
+                Events = _unitOfWork.Event.GetAll().ToList(),
+                EventParticipants = _unitOfWork.EventParticipant.GetAll().ToList()
+            };
 
-            return View(events);
+            return View(eventsVM);
         }
 
         [HttpPost]
@@ -47,8 +53,6 @@ namespace EventManager.Areas.Customer.Controllers
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Content(EventNotFound, MediaTypeNames.Text.Plain);
             }
-
-            selectedEvent.Occupied += 1;
 
             var existingParticipant = _unitOfWork.EventParticipant.Get(ep => ep.EventId == eventId && ep.UserId == user.Id);
             if (existingParticipant is not null)
@@ -78,6 +82,21 @@ namespace EventManager.Areas.Customer.Controllers
             }
 
             return Content(EventParticipantsSigned, MediaTypeNames.Text.Plain);
+        }
+
+        [HttpDelete]
+        public IActionResult SignOut(string? userId)
+        {
+            var participant = _unitOfWork.EventParticipant.Get(x => x.UserId == userId);
+            if(participant is null) 
+            {
+                return Content(EventParticipantsNotSignedUp, MediaTypeNames.Text.Plain);
+            }
+
+            _unitOfWork.EventParticipant.Remove(participant);
+            _unitOfWork.Save();
+
+            return Content(EventParticipantsSignedOut, MediaTypeNames.Text.Plain);
         }
     }
 }

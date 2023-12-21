@@ -1,13 +1,15 @@
 ﻿@model EventDetailsVM
 
-<h2>Event Details</h2>
+<a class="btn btn-secondary" asp-area="Customer" asp-controller="EventParticipants" asp-action="Index"><i class="bi bi-arrow-left"></i> Back to List</a>
 
-<div class="contianer">
-    @Html.Raw(Model.Event.Description);
-</div>
+<h2>Event Details</h2>
 
 <div>
     @Model.Event.Title
+</div>
+
+<div class="contianer">
+    @Html.Raw(Model.Event.Description)
 </div>
 
 

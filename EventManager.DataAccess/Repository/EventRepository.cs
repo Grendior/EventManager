@@ -7,7 +7,6 @@ namespace EventManager.DataAccess.Repository
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 
-
         public void Update(Event entity)
         {
             _dbContext.Events.Update(entity);

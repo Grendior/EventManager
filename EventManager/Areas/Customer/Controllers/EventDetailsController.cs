@@ -1,5 +1,6 @@
 ﻿using EventManager.DataAccess;
 using EventManager.DataAccess.Repository.IRepository;
+using EventManager.Models;
 using EventManager.Models.ViewModels;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -61,8 +62,8 @@ namespace EventManager.Areas.Customer.Controllers
                 return NotFound();
             }
 
-            var participation = _unitOfWork.EventParticipant.Get(x => x.Id == participationId);
-            if (participation is null)
+            var participation = _unitOfWork.EventParticipant.Get(x => x.Id == participationId, includes: "Event");
+            if (participation is null || participation.Event is null)
             {
                 return NotFound();
             }
@@ -71,7 +72,16 @@ namespace EventManager.Areas.Customer.Controllers
             _unitOfWork.EventParticipant.Update(participation);
             _unitOfWork.Save();
 
+            CountByStatus(participation.Event, participation.EventId, AssignmentStatus.Accepted);
+
             return RedirectToAction(nameof(_EventParticipantsTable), new { participation.EventId });
+        }
+
+        private void CountByStatus(Event eventObj, string? eventId, AssignmentStatus assignmentStatus)
+        {
+            eventObj.Occupied = _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventId && x.Status == assignmentStatus).Count();
+            _unitOfWork.Event.Update(eventObj);
+            _unitOfWork.Save();
         }
     }
 }
