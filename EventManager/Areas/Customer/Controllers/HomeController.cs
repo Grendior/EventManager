@@ -1,4 +1,6 @@
 using EventManager.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -8,14 +10,17 @@ namespace EventManager.Areas.Customer.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IEmailSender _emailSender;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger,IEmailSender emailSender)
         {
             _logger = logger;
+            _emailSender = emailSender;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            await _emailSender.SendEmailAsync("rinebi6626@ubinert.com", "temat", "Hello world!");
             return View();
         }
 
