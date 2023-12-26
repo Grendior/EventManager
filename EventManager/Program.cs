@@ -22,6 +22,16 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 
+builder.Services.Configure<MailOptions>(options =>
+{
+    options.Host_Address = builder.Configuration["MailSettings:Address"]!;
+    options.Host_Port = Convert.ToInt32(builder.Configuration["MailSettings:Port"]);
+    options.Host_Username = builder.Configuration["MailSettings:Account"]!;
+    options.Host_Password = builder.Configuration["MailSettings:Password"]!;
+    options.Sender_EMail = builder.Configuration["MailSettings:SenderEmail"]!;
+    options.Sender_Name = builder.Configuration["MailSettings:SenderName"]!;
+});
+
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();

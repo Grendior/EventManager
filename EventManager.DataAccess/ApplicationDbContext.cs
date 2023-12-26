@@ -9,7 +9,6 @@ namespace EventManager.DataAccess
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            
         }
 
         public DbSet<Event> Events { get; set; }

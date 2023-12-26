@@ -18,9 +18,8 @@ namespace EventManager.Areas.Customer.Controllers
             _emailSender = emailSender;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            await _emailSender.SendEmailAsync("rinebi6626@ubinert.com", "temat", "Hello world!");
             return View();
         }
 

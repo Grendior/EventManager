@@ -61,32 +61,32 @@ namespace EventManager.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "832d7c65-0249-4361-b036-85ceca0b8c6b",
+                            Id = "790c2361-b4ba-4adf-9882-12f5370d4363",
                             Capacity = 30,
-                            Date = new DateTime(2023, 12, 20, 5, 33, 3, 86, DateTimeKind.Local).AddTicks(7349),
-                            EndTime = new DateTime(2023, 12, 20, 5, 33, 3, 86, DateTimeKind.Local).AddTicks(7391),
+                            Date = new DateTime(2023, 12, 24, 18, 42, 35, 791, DateTimeKind.Local).AddTicks(1674),
+                            EndTime = new DateTime(2023, 12, 24, 18, 42, 35, 791, DateTimeKind.Local).AddTicks(1727),
                             Occupied = 0,
-                            StartTime = new DateTime(2023, 12, 20, 5, 33, 3, 86, DateTimeKind.Local).AddTicks(7390),
+                            StartTime = new DateTime(2023, 12, 24, 18, 42, 35, 791, DateTimeKind.Local).AddTicks(1725),
                             Title = "Tytuł Wydarzenia"
                         },
                         new
                         {
-                            Id = "a1d609fe-e211-41b6-a4d6-1f58d8e0ae10",
+                            Id = "19500b2d-a29e-4a61-8708-3d5f13db367c",
                             Capacity = 40,
-                            Date = new DateTime(2023, 12, 20, 5, 33, 3, 86, DateTimeKind.Local).AddTicks(7396),
-                            EndTime = new DateTime(2023, 12, 20, 5, 33, 3, 86, DateTimeKind.Local).AddTicks(7398),
+                            Date = new DateTime(2023, 12, 24, 18, 42, 35, 791, DateTimeKind.Local).AddTicks(1733),
+                            EndTime = new DateTime(2023, 12, 24, 18, 42, 35, 791, DateTimeKind.Local).AddTicks(1735),
                             Occupied = 0,
-                            StartTime = new DateTime(2023, 12, 20, 5, 33, 3, 86, DateTimeKind.Local).AddTicks(7397),
+                            StartTime = new DateTime(2023, 12, 24, 18, 42, 35, 791, DateTimeKind.Local).AddTicks(1734),
                             Title = "Tytuł Wydarzenia 2"
                         },
                         new
                         {
-                            Id = "6375b2fc-7aeb-404c-907b-f30ec120ce30",
+                            Id = "c3f42cc2-6bc9-4439-a3a7-e98d2d28f332",
                             Capacity = 50,
-                            Date = new DateTime(2023, 12, 20, 5, 33, 3, 86, DateTimeKind.Local).AddTicks(7431),
-                            EndTime = new DateTime(2023, 12, 20, 5, 33, 3, 86, DateTimeKind.Local).AddTicks(7433),
+                            Date = new DateTime(2023, 12, 24, 18, 42, 35, 791, DateTimeKind.Local).AddTicks(1738),
+                            EndTime = new DateTime(2023, 12, 24, 18, 42, 35, 791, DateTimeKind.Local).AddTicks(1741),
                             Occupied = 0,
-                            StartTime = new DateTime(2023, 12, 20, 5, 33, 3, 86, DateTimeKind.Local).AddTicks(7432),
+                            StartTime = new DateTime(2023, 12, 24, 18, 42, 35, 791, DateTimeKind.Local).AddTicks(1740),
                             Title = "Tytuł Wydarzenia 3"
                         });
                 });

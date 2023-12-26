@@ -1,15 +1,28 @@
 ﻿@model List<ApplicationUser>
 
-<h2>Users Managment</h2>
+@inject UserManager<IdentityUser> UserManager
+
+<div class="container">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2>Users list</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Upsert" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Add User</a>
+        </div>
+    </div>
+</div>
 
 <table id="users_table" class="table table-hover table-primary table-bordered">
     <thead>
         <tr>
+            <th scope="col">Username</th>
+            
             <th scope="col">First name</th>
-
+            
             <th scope="col">Last name</th>
 
-            <th scope="col">Role</th>
+            <th scope="col">Roles</th>
 
             <th scope="col">Actions</th>
         </tr>
@@ -18,11 +31,16 @@
     <tbody>
         @foreach (var item in Model)
         {
+            
             <tr>
+                <td>@item.UserName</td>
                 <td>@item.FirstName</td>
                 <td>@item.LastName</td>
-                <td>Role TODO</td>
-                <td></td>
+                <td>@(string.Join(", ", UserManager.GetRolesAsync(item).GetAwaiter().GetResult()))</td>
+                <td>
+                    <a asp-action="Upsert" asp-route-userId="@item.Id" class="btn btn-secondary">Edit</a>
+                    <a asp-action="Delete" asp-route-userId="@item.Id" class="btn btn-danger">Delete</a>
+                </td>
             </tr>
         }
     </tbody>

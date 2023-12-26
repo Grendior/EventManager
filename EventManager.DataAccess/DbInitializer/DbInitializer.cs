@@ -23,7 +23,7 @@ namespace EventManager.DataAccess.DbInitializer
             _dbContext = dbContext;
         }
 
-        public async void Initialize()
+        public void Initialize()
         {
             try
             {
