@@ -1,4 +1,4 @@
-html {
+html {;
   font-size: 14px;
 }
 
@@ -19,4 +19,9 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+#toast-container > div {
+    margin-top: 73px !important;
+    opacity: 1 !important;
 }

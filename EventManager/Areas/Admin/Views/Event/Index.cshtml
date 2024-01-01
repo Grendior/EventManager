@@ -42,7 +42,7 @@
         function delete(id) {
             $.ajax({
                 type: 'DELETE',
-                url: '/Admin/UserManagment/Delete',
+                url: '/Admin/Event/Delete',
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 data: { userId: id },
                 success: function (result) {

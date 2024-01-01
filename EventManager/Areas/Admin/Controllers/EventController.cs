@@ -43,19 +43,22 @@ namespace EventManager.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["error"] = "Please fill out the form correctly";
                 return View();
             }
 
             if (string.IsNullOrEmpty(eventObj.Id))
             {
                 eventObj.Id = Guid.NewGuid().ToString();
-
                 _unitOfWork.Event.Add(eventObj);
-                _unitOfWork.Save();
-                return RedirectToAction(nameof(Index));
+                TempData["success"] = "Event was successfully created";
+            }
+            else
+            {
+                _unitOfWork.Event.Update(eventObj);
+                TempData["success"] = "Event was successfully updated";
             }
 
-            _unitOfWork.Event.Update(eventObj);
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }

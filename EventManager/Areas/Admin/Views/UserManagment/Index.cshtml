@@ -39,9 +39,36 @@
                 <td>@(string.Join(", ", UserManager.GetRolesAsync(item).GetAwaiter().GetResult()))</td>
                 <td>
                     <a asp-action="Upsert" asp-route-userId="@item.Id" class="btn btn-secondary">Edit</a>
-                    <a asp-action="Delete" asp-route-userId="@item.Id" class="btn btn-danger">Delete</a>
+                    <a onclick=Delete('/admin/usermanagment/delete?userId=@item.Id') class="btn btn-danger">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts{
+    <script type="text/javascript">
+        function Delete(url) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        success: function (result) {
+                            toastr.success(result.message);
+                            location.reload();
+                        }
+                    })
+                }
+            });
+        }
+    </script>
+}

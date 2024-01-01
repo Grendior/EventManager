@@ -12,6 +12,8 @@
             <hr />
         </div>
         <div class="mb-3 row">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
             <input asp-for="ApplicationUser.Id" hidden />
             <div class="form-group">
                 <label class="col-form-label mt-4" for="FirstName">First Name</label>

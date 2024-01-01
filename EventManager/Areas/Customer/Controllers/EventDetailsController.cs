@@ -1,8 +1,10 @@
 ﻿using EventManager.DataAccess;
 using EventManager.DataAccess.Repository.IRepository;
-using EventManager.Models;
 using EventManager.Models.ViewModels;
 using EventManager.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static EventManager.Utils.Enums;
@@ -13,16 +15,21 @@ namespace EventManager.Areas.Customer.Controllers
     public class EventDetailsController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailSender _emailSender;
         private readonly ILogger<EventParticipantsController> _logger;
 
-        public EventDetailsController(ApplicationDbContext dbContext, IUnitOfWork unitOfWork, ILogger<EventParticipantsController> logger)
+        public EventDetailsController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork, IEmailSender emailSender, ILogger<EventParticipantsController> logger)
         {
             _dbContext = dbContext;
+            _userManager = userManager;
             _unitOfWork = unitOfWork;
+            _emailSender = emailSender;
             _logger = logger;
         }
 
+        [Authorize]
         public IActionResult Index(string eventId)
         {
             var eventObj = _unitOfWork.Event.Get(x => x.Id == eventId);
@@ -54,7 +61,7 @@ namespace EventManager.Areas.Customer.Controllers
         }
 
         [HttpPut]
-        public IActionResult ChangeParticipationStatus(int participationId, int status)
+        public async Task<IActionResult> ChangeParticipationStatus(int participationId, int status)
         {
             var assignmentStatus = (AssignmentStatus)status;
             if (!(new[] { AssignmentStatus.Accepted, AssignmentStatus.Reserve, AssignmentStatus.Declined }).Contains(assignmentStatus))
@@ -67,21 +74,35 @@ namespace EventManager.Areas.Customer.Controllers
             {
                 return NotFound();
             }
-
+            // TODO: Sprawdzać czy można jeszcze zapisać jeśli nie to zwracać taką informację
             participation.Status = assignmentStatus;
             _unitOfWork.EventParticipant.Update(participation);
             _unitOfWork.Save();
 
-            CountByStatus(participation.Event, participation.EventId, AssignmentStatus.Accepted);
+            if (assignmentStatus == AssignmentStatus.Accepted && !string.IsNullOrEmpty(participation.UserId))
+            {
+                var user = await _userManager.FindByIdAsync(participation.UserId);
+
+                if (user == null || string.IsNullOrEmpty(user.Email))
+                {
+                    return Content(TempDataInfos.SendingInformationUserOrEventNotFound);
+                }
+
+                var callbackUrl = Request.Scheme + "://" + Request.Host + Url.Action(nameof(Index), new { eventId = participation.EventId });
+
+                if (callbackUrl == null)
+                {
+                    return Content(TempDataInfos.SendingInformationInvalidLink);
+                }
+
+                await _emailSender.SendEmailAsync(
+                    user.Email,
+                    "Event status information",
+                    $"Congratulations, you have been accepted to the {participation.Event.Title}. In case you change your mind and want to refuse here is redirection to our website. <a href='{callbackUrl}'>Click here to go to the event</a>."
+                );
+            }
 
             return RedirectToAction(nameof(_EventParticipantsTable), new { participation.EventId });
-        }
-
-        private void CountByStatus(Event eventObj, string? eventId, AssignmentStatus assignmentStatus)
-        {
-            eventObj.Occupied = _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventId && x.Status == assignmentStatus).Count();
-            _unitOfWork.Event.Update(eventObj);
-            _unitOfWork.Save();
         }
     }
 }
