@@ -1,11 +1,29 @@
 ﻿@model EventDetailsVM
 
-<a class="btn btn-secondary" asp-area="Customer" asp-controller="EventParticipants" asp-action="Index"><i class="bi bi-arrow-left"></i> Back to List</a>
+@inject UserManager<IdentityUser> UserManager
 
-<h2>
-    @Model.Event.Title
-</h2>
+@{
+    var userId = UserManager.GetUserId(User);
+    var isSigned = Model.Participants.Any(x => x.UserId == userId);
+}
 
+
+<div>
+    <h2>
+        @Model.Event.Title
+    </h2>
+    
+    <a class="btn btn-secondary" asp-area="Customer" asp-controller="EventParticipants" asp-action="Index"><i class="bi bi-arrow-left"></i> Back to List</a>
+    
+    @if (isSigned)
+    {
+        <button type="button" onclick="signOut('@userId', '@Model.Event.Id')" class="btn btn-lg btn-warning">Sign out</button>
+    }
+    else
+    {
+        <button type="button" onclick="signIn('@Model.Event.Id')" class="btn btn-lg btn-success">Sign in</button>
+    }
+</div>
 
 <div class="contianer">
     @Html.Raw(Model.Event.Description)
@@ -30,6 +48,38 @@
                 },
                 error: function () {
                     alert('Failed to change status');
+                }
+            })
+        }
+
+        function signIn(id) {
+            $.ajax({
+                type: 'POST',
+                url: '/Customer/EventParticipants/SignIn',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                data: { eventId: id },
+                success: function (result) {
+                    toastr.success(result.message);
+                    location.reload();
+                },
+                error: function (error) {
+                    toastr.error(error.message);
+                }
+            })
+        }
+
+        function signOut(userId, eventId) {
+            $.ajax({
+                type: 'DELETE',
+                url: '/Customer/EventParticipants/SignOut',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                data: { userId: userId, eventId: eventId },
+                success: function (result) {
+                    location.reload();
+                    toastr.success(result.message);
+                },
+                error: function (error) {
+                    toastr.error(error.message);
                 }
             })
         }

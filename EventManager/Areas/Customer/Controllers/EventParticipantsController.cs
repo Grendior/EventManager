@@ -85,18 +85,18 @@ namespace EventManager.Areas.Customer.Controllers
         }
 
         [HttpDelete]
-        public IActionResult SignOut(string? userId)
+        public IActionResult SignOut(string? userId, string? eventId)
         {
-            var participant = _unitOfWork.EventParticipant.Get(x => x.UserId == userId);
+            var participant = _unitOfWork.EventParticipant.Get(x => x.UserId == userId && x.EventId == eventId);
             if(participant is null) 
             {
-                return Content(EventParticipantsNotSignedUp, MediaTypeNames.Text.Plain);
+                return Json(new { success = false, message = EventParticipantsNotSignedUp });
             }
 
             _unitOfWork.EventParticipant.Remove(participant);
             _unitOfWork.Save();
 
-            return Content(EventParticipantsSignedOut, MediaTypeNames.Text.Plain);
+            return Json(new { success = false, message = EventParticipantsSignedOut });
         }
     }
 }

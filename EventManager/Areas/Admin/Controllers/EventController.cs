@@ -63,40 +63,24 @@ namespace EventManager.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
+        [HttpDelete]
         public IActionResult Delete(string? id)
         {
             if (string.IsNullOrEmpty(id))
             {
-                return NotFound();
+                return Json(new { success = false, message = "There is no userId passed" });
             }
 
             var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
             if (eventFromDb is null)
             {
-                return NotFound();
-            }
-
-            return View(eventFromDb);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePOST(string? id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
-            var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
-            if (eventFromDb is null)
-            {
-                return NotFound();
+                return Json(new { success = false, message = "There is no such event" });
             }
 
             _unitOfWork.Event.Remove(eventFromDb);
             _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
+            TempData["success"] = "Event has been successfully deleted";
+            return Json(new { success = true, message = "Event has been successfully deleted" });
         }
     }
 }

@@ -26,7 +26,7 @@
                 <td class="text-center">
                     @if (isSigned)
                     {
-                        <button type="button" onclick="signOut('@Model.UserId')" class="btn btn-lg btn-warning">Sign out</button>
+                        <button type="button" onclick="signOut('@Model.UserId', '@item.Id')" class="btn btn-lg btn-warning">Sign out</button>
                     }
                     else
                     {
@@ -38,7 +38,6 @@
         }
     </tbody>
 </table>
-
 
 @section Scripts {
     <script type="text/javascript">
@@ -58,12 +57,12 @@
             })
         }
 
-        function signOut(id) {
+        function signOut(userId, eventId) {
             $.ajax({
                 type: 'DELETE',
                 url: '/Customer/EventParticipants/SignOut',
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                data: { userId: id },
+                data: { userId: userId, eventId: eventId },
                 success: function (result) {
                     alert(result);
                     location.reload();
