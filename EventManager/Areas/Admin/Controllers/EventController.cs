@@ -68,7 +68,7 @@ namespace EventManager.Areas.Admin.Controllers
                 _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 TempData["error"] = EventSomethingWrong;
                 return View();
@@ -107,7 +107,7 @@ namespace EventManager.Areas.Admin.Controllers
                 TempData["success"] = SuccessfulDeletionOfEvent;
                 return Json(new { success = true, message = SuccessfulDeletionOfEvent });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 TempData["error"] = ErrorDuringEventDelete;
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
