@@ -1,4 +1,5 @@
-﻿using EventManager.DataAccess;
+﻿using System.Net;
+using EventManager.DataAccess;
 using EventManager.DataAccess.Repository.IRepository;
 using EventManager.Models;
 using EventManager.Models.ViewModels;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Encodings.Web;
+using static EventManager.Utils.TempDataInfos;
 
 namespace EventManager.Areas.Admin.Controllers
 {
@@ -25,7 +27,9 @@ namespace EventManager.Areas.Admin.Controllers
         private readonly ApplicationDbContext _dbContext;
 
 
-        public UserManagmentController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork, IUserStore<IdentityUser> userStore, IEmailSender emailSender, ApplicationDbContext dbContext)
+        public UserManagmentController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
+            IUnitOfWork unitOfWork, IUserStore<IdentityUser> userStore, IEmailSender emailSender,
+            ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -46,13 +50,13 @@ namespace EventManager.Areas.Admin.Controllers
         {
             var user = _dbContext.ApplicationUsers.FirstOrDefault(x => x.Id == userId);
             var roleList = _roleManager.Roles.Select(x => x.Name)
-                    .Select(i =>
-                        new SelectListItem
-                        {
-                            Text = i,
-                            Value = i
-                        }
-                    );
+                .Select(i =>
+                    new SelectListItem
+                    {
+                        Text = i,
+                        Value = i
+                    }
+                );
 
             if (user is null)
             {
@@ -75,7 +79,7 @@ namespace EventManager.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(model);
             }
 
             var user = _dbContext.ApplicationUsers.FirstOrDefault(x => x.Id == model.ApplicationUser.Id);
@@ -96,6 +100,7 @@ namespace EventManager.Areas.Admin.Controllers
             IdentityResult result;
             if (update)
             {
+                TempData["success"] = UserSuccessfullyUpdated;
                 result = await _userManager.UpdateAsync(user);
             }
             else
@@ -103,9 +108,11 @@ namespace EventManager.Areas.Admin.Controllers
                 var password = CreateRandomPassword();
                 result = await _userManager.CreateAsync(user, password);
 
-                if (user == null || string.IsNullOrEmpty(user.Email))
+                if (string.IsNullOrEmpty(user.Email))
                 {
-                    return Content(TempDataInfos.SendingInformationUserOrEventNotFound);
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    TempData["error"] = SendingInformationUserOrEventNotFound;
+                    return View(model);
                 }
 
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -118,15 +125,17 @@ namespace EventManager.Areas.Admin.Controllers
 
                 if (callbackUrl == null)
                 {
-                    return Content(TempDataInfos.SendingInformationInvalidLink);
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    TempData["error"] = SendingInformationUserOrEventNotFound;
+                    return View(model);
                 }
 
                 await _emailSender.SendEmailAsync(
                     user.Email,
                     "New account create",
-                    $"Your account have been prepered by admin of the website. <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Click here to change password</a>.");
+                    $"Your account have been prepared by admin of the website. <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Click here to change password</a>.");
 
-
+                TempData["success"] = UserSuccessfullyCreated;
             }
 
             if (result.Succeeded)
@@ -136,6 +145,7 @@ namespace EventManager.Areas.Admin.Controllers
                 {
                     await _userManager.RemoveFromRoleAsync(user, role);
                 }
+
                 if (role != model.Role!)
                 {
                     await _userManager.AddToRoleAsync(user, model.Role ?? SD.Role_Customer);
@@ -143,11 +153,14 @@ namespace EventManager.Areas.Admin.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
+            TempData["success"] = "";
+            TempData["error"] = UserFailedCreateOrUpdate;
             return View(model);
         }
 
@@ -156,30 +169,33 @@ namespace EventManager.Areas.Admin.Controllers
         {
             if (userId is null)
             {
-                return Json(new { success = false, message = "userId is empty exist" });
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = UserNotFound });
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user is null)
             {
-                return Json(new { success = false, message = "User doesn't exist" });
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = UserNotFound });
             }
 
-            var listOfUserParticipation = _unitOfWork.EventParticipant.GetAllFiltered(x => x.UserId == userId);
-            if (listOfUserParticipation.Any())
+            var listOfUserParticipation = _unitOfWork.EventParticipant.GetAllFiltered(x => x.UserId == userId).ToList();
+            if (listOfUserParticipation.Count != 0)
             {
                 _unitOfWork.EventParticipant.RemoveRange(listOfUserParticipation);
             }
 
             var deleteResult = await _userManager.DeleteAsync(user);
 
-            if (deleteResult.Succeeded)
+            if (!deleteResult.Succeeded)
             {
-                _dbContext.SaveChanges();
-                return Json(new { success = true, message = "User has been successfully deleted" });
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = UserDeleteSomethingWrong });
             }
 
-            return Json(new { success = false, message = "Something went wrong while deleting an user" });
+            await _dbContext.SaveChangesAsync();
+            return Json(new { success = true, message = UserSuccessfullyDeleted });
         }
 
         private IUserEmailStore<IdentityUser> GetEmailStore()
@@ -188,20 +204,21 @@ namespace EventManager.Areas.Admin.Controllers
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
+
             return (IUserEmailStore<IdentityUser>)_userStore;
         }
 
         private static string CreateRandomPassword(int length = 15)
         {
-            var smallLetters = "abcdefghijklmnopqrstuvwxyz";
-            var bigLetters = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
-            var number = "0123456789";
-            var nonAlphanumeric = "!@#$%^&*?_-";
-            string validChars = bigLetters + smallLetters + number + nonAlphanumeric;
-            Random random = new Random();
+            const string smallLetters = "abcdefghijklmnopqrstuvwxyz";
+            const string bigLetters = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
+            const string number = "0123456789";
+            const string nonAlphanumeric = "!@#$%^&*?_-";
+            const string validChars = bigLetters + smallLetters + number + nonAlphanumeric;
+            var random = new Random();
 
-            char[] chars = new char[length];
-            for (int i = 0; i < length; i++)
+            var chars = new char[length];
+            for (var i = 0; i < length; i++)
             {
                 if (!chars.Any(smallLetters.Contains))
                 {

@@ -7,7 +7,11 @@ namespace EventManager.Models
     {
         [Required]
         public string? FirstName { get; set; }
+        
         [Required]
         public string? LastName { get; set; }
+        
+        [Required]
+        public override string? Email { get; set; }
     }
 }

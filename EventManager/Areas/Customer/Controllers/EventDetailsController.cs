@@ -1,5 +1,7 @@
-﻿using EventManager.DataAccess;
+﻿using System.Net;
+using EventManager.DataAccess;
 using EventManager.DataAccess.Repository.IRepository;
+using EventManager.Models;
 using EventManager.Models.ViewModels;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static EventManager.Utils.TempDataInfos;
 using static EventManager.Utils.Enums;
 
 namespace EventManager.Areas.Customer.Controllers
@@ -39,25 +42,25 @@ namespace EventManager.Areas.Customer.Controllers
                 return NotFound();
             }
 
-            var eventDetailsVM = new EventDetailsVM
+            var eventDetailsVm = new EventDetailsVM
             {
                 Event = eventObj
             };
 
             if (User.IsInRole(SD.Role_Admin))
             {
-                eventDetailsVM.Participants = [.. _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventId, "User")];
+                eventDetailsVm.Participants = [.. _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventId, "User")];
             }
 
-            return View(eventDetailsVM);
+            return View(eventDetailsVm);
         }
 
 
         public IActionResult _EventParticipantsTable(string eventId)
         {
             // TODO: In case you came up with better way to refresh 
-            var Participants = _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventId, "User").ToList();
-            return PartialView("_EventParticipantsTable", Participants);
+            var participants = _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventId, "User").ToList();
+            return PartialView("_EventParticipantsTable", participants);
         }
 
         [HttpPut]
@@ -66,43 +69,54 @@ namespace EventManager.Areas.Customer.Controllers
             var assignmentStatus = (AssignmentStatus)status;
             if (!(new[] { AssignmentStatus.Accepted, AssignmentStatus.Reserve, AssignmentStatus.Declined }).Contains(assignmentStatus))
             {
-                return NotFound();
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = WrongStatus });
             }
 
             var participation = _unitOfWork.EventParticipant.Get(x => x.Id == participationId, includes: "Event");
-            if (participation is null || participation.Event is null)
+            if (participation?.Event is null)
             {
-                return NotFound();
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = EventNotFound });
             }
-            // TODO: Sprawdzać czy można jeszcze zapisać jeśli nie to zwracać taką informację
+
+            if (assignmentStatus == AssignmentStatus.Accepted && IsEventFull(participation.Event))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = EventIsFull });
+            }
+            
             participation.Status = assignmentStatus;
             _unitOfWork.EventParticipant.Update(participation);
             _unitOfWork.Save();
 
-            if (assignmentStatus == AssignmentStatus.Accepted && !string.IsNullOrEmpty(participation.UserId))
+            if (assignmentStatus != AssignmentStatus.Accepted || string.IsNullOrEmpty(participation.UserId))
             {
-                var user = await _userManager.FindByIdAsync(participation.UserId);
+                return RedirectToAction(nameof(_EventParticipantsTable), new { participation.EventId });
+            }
+            
+            var user = await _userManager.FindByIdAsync(participation.UserId);
 
-                if (user == null || string.IsNullOrEmpty(user.Email))
-                {
-                    return Content(TempDataInfos.SendingInformationUserOrEventNotFound);
-                }
-
-                var callbackUrl = Request.Scheme + "://" + Request.Host + Url.Action(nameof(Index), new { eventId = participation.EventId });
-
-                if (callbackUrl == null)
-                {
-                    return Content(TempDataInfos.SendingInformationInvalidLink);
-                }
-
-                await _emailSender.SendEmailAsync(
-                    user.Email,
-                    "Event status information",
-                    $"Congratulations, you have been accepted to the {participation.Event.Title}. In case you change your mind and want to refuse here is redirection to our website. <a href='{callbackUrl}'>Click here to go to the event</a>."
-                );
+            if (user == null || string.IsNullOrEmpty(user.Email))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = UserNotFound });
             }
 
+            var callbackUrl = Request.Scheme + "://" + Request.Host + Url.Action(nameof(Index), new { eventId = participation.EventId });
+
+            await _emailSender.SendEmailAsync(
+                user.Email,
+                "Event status information",
+                $"Congratulations, you have been accepted to the {participation.Event.Title}. In case you change your mind and want to refuse here is redirection to our website. <a href='{callbackUrl}'>Click here to go to the event</a>."
+            );
+
             return RedirectToAction(nameof(_EventParticipantsTable), new { participation.EventId });
+        }
+        
+        public bool IsEventFull(Event obj)
+        {
+            return _unitOfWork.EventParticipant.GetAllFiltered(x => x.Status == AssignmentStatus.Accepted).Count() >= obj.Capacity;
         }
     }
 }

@@ -15,39 +15,45 @@
 
 <table id="users_table" class="table table-hover table-primary table-bordered">
     <thead>
-        <tr>
-            <th scope="col">Username</th>
-            
-            <th scope="col">First name</th>
-            
-            <th scope="col">Last name</th>
+    <tr>
+        <th scope="col">Username</th>
 
-            <th scope="col">Roles</th>
+        <th scope="col">First name</th>
 
-            <th scope="col">Actions</th>
-        </tr>
+        <th scope="col">Last name</th>
+
+        <th scope="col">Roles</th>
+
+        <th scope="col">Actions</th>
+    </tr>
     </thead>
 
     <tbody>
-        @foreach (var item in Model)
-        {
-            
-            <tr>
-                <td>@item.UserName</td>
-                <td>@item.FirstName</td>
-                <td>@item.LastName</td>
-                <td>@(string.Join(", ", UserManager.GetRolesAsync(item).GetAwaiter().GetResult()))</td>
-                <td>
-                    <a asp-action="Upsert" asp-route-userId="@item.Id" class="btn btn-secondary">Edit</a>
-                    <a onclick="Delete('/admin/usermanagment/delete?userId=@item.Id')" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
-        }
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.UserName</td>
+            <td>@item.FirstName</td>
+            <td>@item.LastName</td>
+            <td>@(string.Join(", ", UserManager.GetRolesAsync(item).GetAwaiter().GetResult()))</td>
+            <td>
+                <a asp-action="Upsert" asp-route-userId="@item.Id" class="btn btn-secondary">Edit</a>
+                <a onclick="Delete('/admin/usermanagment/delete?userId=@item.Id')" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+    }
     </tbody>
 </table>
 
 @section Scripts{
     <script type="text/javascript">
+        const successKey = 'successKey';
+        const infoKey = 'infoKey';
+    
+        $(document).ready(function () {
+            successInfo(infoKey, successKey);
+        });
+
         function Delete(url) {
             Swal.fire({
                 title: "Are you sure?",
@@ -63,7 +69,12 @@
                         url: url,
                         type: 'DELETE',
                         success: function (result) {
+                            sessionStorage.setItem(successKey,"true");
+                            sessionStorage.setItem(infoKey, result.message);
                             location.reload();
+                        },
+                        error: function (error) {
+                            toastr.error($.parseJSON(error.responseText).message);
                         }
                     })
                 }
