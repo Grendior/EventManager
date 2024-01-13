@@ -41,6 +41,13 @@
 
 @section Scripts {
     <script type="text/javascript">
+        const successKey = 'successKey';
+        const infoKey = 'infoKey';
+        
+        $(document).ready(function () {
+          successInfo(infoKey, successKey);
+        });
+    
         function signIn(id) {
             $.ajax({
                 type: 'POST',
@@ -48,11 +55,12 @@
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 data: { eventId: id },
                 success: function (result) {
-                    alert(result);
+                    sessionStorage.setItem(successKey,"true");
+                    sessionStorage.setItem(infoKey, result.message);
                     location.reload();
                 },
                 error: function (error) {
-                    alert(error.responseText);
+                    toastr.error($.parseJSON(error.responseText).message);
                 }
             })
         }
@@ -64,11 +72,12 @@
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 data: { userId: userId, eventId: eventId },
                 success: function (result) {
-                    alert(result);
+                    sessionStorage.setItem(successKey,"true");
+                    sessionStorage.setItem(infoKey, result.message);
                     location.reload();
                 },
                 error: function (error) {
-                    alert(error.responseText);
+                    toastr.error($.parseJSON(error.responseText).message);
                 }
             })
         }

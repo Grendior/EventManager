@@ -39,7 +39,7 @@
                 <td>@(string.Join(", ", UserManager.GetRolesAsync(item).GetAwaiter().GetResult()))</td>
                 <td>
                     <a asp-action="Upsert" asp-route-userId="@item.Id" class="btn btn-secondary">Edit</a>
-                    <a onclick=Delete('/admin/usermanagment/delete?userId=@item.Id') class="btn btn-danger">Delete</a>
+                    <a onclick="Delete('/admin/usermanagment/delete?userId=@item.Id')" class="btn btn-danger">Delete</a>
                 </td>
             </tr>
         }
@@ -63,7 +63,6 @@
                         url: url,
                         type: 'DELETE',
                         success: function (result) {
-                            toastr.success(result.message);
                             location.reload();
                         }
                     })
