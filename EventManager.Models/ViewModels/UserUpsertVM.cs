@@ -6,7 +6,7 @@ namespace EventManager.Models.ViewModels
 {
     public class UserUpsertVM
     {
-        public ApplicationUser ApplicationUser { get; set; } = new ApplicationUser();
+        public ApplicationUser ApplicationUser { get; set; } = new();
         [Required]
         public string? Role { get; set; }
         [ValidateNever]

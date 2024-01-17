@@ -44,21 +44,21 @@ namespace EventManager.Areas.Customer.Controllers
             if (user is null)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content(UserNotFound, MediaTypeNames.Text.Plain);
+                return Json(new { success = false, message = UserNotFound });
             }
 
             var selectedEvent = _unitOfWork.Event.Get(e => e.Id == eventId);
             if (selectedEvent is null)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content(EventNotFound, MediaTypeNames.Text.Plain);
+                return Json(new { success = false, message = EventNotFound });
             }
 
             var existingParticipant = _unitOfWork.EventParticipant.Get(ep => ep.EventId == eventId && ep.UserId == user.Id);
             if (existingParticipant is not null)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content(EventParticipantsAlreadySigned, MediaTypeNames.Text.Plain);
+                return Json(new { success = false, message = EventParticipantsAlreadySigned });
             }
 
             var newParticipant = new EventParticipant
@@ -78,10 +78,10 @@ namespace EventManager.Areas.Customer.Controllers
             {
                 _logger.LogError(ex, "Exception");
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content(EventParticipantsError, MediaTypeNames.Text.Plain);
+                return Json(new { success = false, message = EventParticipantsError });
             }
 
-            return Content(EventParticipantsSigned, MediaTypeNames.Text.Plain);
+            return Json(new { success = true, message = EventParticipantsSigned });
         }
 
         [HttpDelete]

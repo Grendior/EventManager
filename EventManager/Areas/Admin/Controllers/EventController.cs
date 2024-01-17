@@ -1,16 +1,19 @@
-﻿using EventManager.DataAccess.Repository.IRepository;
+﻿using System.Net;
+using EventManager.DataAccess.Repository.IRepository;
 using EventManager.Models;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static EventManager.Utils.TempDataInfos;
 
 namespace EventManager.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(SD.Role_Admin)]
     [Authorize(Roles = SD.Role_Admin)]
     public class EventController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+
         public EventController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -30,12 +33,13 @@ namespace EventManager.Areas.Admin.Controllers
             }
 
             var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
-            if (eventFromDb is null)
+            if (eventFromDb is not null)
             {
-                return NotFound();
+                return View(eventFromDb);
             }
 
-            return View(eventFromDb);
+            TempData["error"] = EventNotFound;
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -43,24 +47,32 @@ namespace EventManager.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "Please fill out the form correctly";
+                TempData["error"] = FillOutForm;
                 return View();
             }
 
-            if (string.IsNullOrEmpty(eventObj.Id))
+            try
             {
-                eventObj.Id = Guid.NewGuid().ToString();
-                _unitOfWork.Event.Add(eventObj);
-                TempData["success"] = "Event was successfully created";
-            }
-            else
-            {
-                _unitOfWork.Event.Update(eventObj);
-                TempData["success"] = "Event was successfully updated";
-            }
+                if (string.IsNullOrEmpty(eventObj.Id))
+                {
+                    eventObj.Id = Guid.NewGuid().ToString();
+                    _unitOfWork.Event.Add(eventObj);
+                    TempData["success"] = EventSuccessfullyCreated;
+                }
+                else
+                {
+                    _unitOfWork.Event.Update(eventObj);
+                    TempData["success"] = EventSuccessfullyUpdated;
+                }
 
-            _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
+                _unitOfWork.Save();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                TempData["error"] = EventSomethingWrong;
+                return View();
+            }
         }
 
         [HttpDelete]
@@ -68,19 +80,39 @@ namespace EventManager.Areas.Admin.Controllers
         {
             if (string.IsNullOrEmpty(id))
             {
-                return Json(new { success = false, message = "There is no userId passed" });
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = EventNotFound });
             }
 
             var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
             if (eventFromDb is null)
             {
-                return Json(new { success = false, message = "There is no such event" });
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = EventNotFound });
             }
 
-            _unitOfWork.Event.Remove(eventFromDb);
-            _unitOfWork.Save();
-            TempData["success"] = "Event has been successfully deleted";
-            return Json(new { success = true, message = "Event has been successfully deleted" });
+            try
+            {
+                // Delete any participants of this event
+                var listOfEventParticipants =
+                    _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventFromDb.Id).ToList();
+                if (listOfEventParticipants.Count != 0)
+                {
+                    _unitOfWork.EventParticipant.RemoveRange(listOfEventParticipants);
+                    _unitOfWork.Save();
+                }
+
+                _unitOfWork.Event.Remove(eventFromDb);
+                _unitOfWork.Save();
+                TempData["success"] = SuccessfulDeletionOfEvent;
+                return Json(new { success = true, message = SuccessfulDeletionOfEvent });
+            }
+            catch (Exception)
+            {
+                TempData["error"] = ErrorDuringEventDelete;
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = false, message = SuccessfulDeletionOfEvent });
+            }
         }
     }
 }
