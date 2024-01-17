@@ -7,9 +7,9 @@ namespace EventManager.DataAccess.Repository
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationDbContext _dbContext;
-        internal DbSet<T> _dbSet;
+        private readonly DbSet<T> _dbSet;
 
-        public Repository(ApplicationDbContext dbContext)
+        protected Repository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
             _dbSet = _dbContext.Set<T>();
@@ -24,42 +24,52 @@ namespace EventManager.DataAccess.Repository
         {
             IQueryable<T> query = _dbSet;
             query = query.Where(filters);
-            if (!string.IsNullOrEmpty(includes))
+            if (string.IsNullOrEmpty(includes))
             {
-                foreach (var item in includes.Split(',', StringSplitOptions.RemoveEmptyEntries))     
-                {
-                    query = query.Include(item);
-                }
+                return query.FirstOrDefault();
             }
+
+            query = includes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Aggregate(query, (current, item) => current.Include(item));
+
             return query.FirstOrDefault();
         }
 
         public IEnumerable<T> GetAll(string? includes = null)
         {
             IQueryable<T> query = _dbSet;
-            if (!string.IsNullOrEmpty(includes))
+            if (string.IsNullOrEmpty(includes))
             {
-                foreach (var item in includes.Split(',', StringSplitOptions.RemoveEmptyEntries))     
-                {
-                    query = query.Include(item);
-                }
+                return query.ToList();
             }
+
+            query = includes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Aggregate(query, (current, item) => current.Include(item));
+
             return query.ToList();
         }
 
-        
+
         public IEnumerable<T> GetAllFiltered(Expression<Func<T, bool>> filters, string? includes = null)
         {
             IQueryable<T> query = _dbSet;
             query = query.Where(filters);
-            if (!string.IsNullOrEmpty(includes))
+            if (string.IsNullOrEmpty(includes))
             {
-                foreach (var item in includes.Split(',', StringSplitOptions.RemoveEmptyEntries))     
-                {
-                    query = query.Include(item);
-                }
+                return query.ToList();
             }
+
+            query = includes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Aggregate(query, (current, item) => current.Include(item));
+
             return query.ToList();
+        }
+
+        public long GetAllFilteredCount(Expression<Func<T, bool>> filters)
+        {
+            IQueryable<T> query = _dbSet;
+
+            return query.Count(filters);
         }
 
         public void Remove(T entity)
@@ -70,7 +80,6 @@ namespace EventManager.DataAccess.Repository
         public void RemoveRange(IEnumerable<T> entities)
         {
             _dbSet.RemoveRange(entities);
-
         }
     }
 }

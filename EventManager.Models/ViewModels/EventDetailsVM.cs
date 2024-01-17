@@ -2,7 +2,9 @@
 {
     public class EventDetailsVM
     {
-        public required Event Event { get; set; }
+        public required Event Event { get; init; }
+        
+        public required bool IsFull { get; set; } 
 
         public List<EventParticipant>? Participants { get; set; }
     }

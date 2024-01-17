@@ -44,7 +44,8 @@ namespace EventManager.Areas.Customer.Controllers
 
             var eventDetailsVm = new EventDetailsVM
             {
-                Event = eventObj
+                Event = eventObj,
+                IsFull = _unitOfWork.EventParticipant.GetAllFilteredCount(x => x.EventId == eventObj.Id && x.Status == AssignmentStatus.Accepted) >= eventObj.Capacity
             };
 
             if (User.IsInRole(SD.Role_Admin))
@@ -116,7 +117,7 @@ namespace EventManager.Areas.Customer.Controllers
         
         public bool IsEventFull(Event obj)
         {
-            return _unitOfWork.EventParticipant.GetAllFiltered(x => x.Status == AssignmentStatus.Accepted).Count() >= obj.Capacity;
+            return _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == obj.Id && x.Status == AssignmentStatus.Accepted).Count() >= obj.Capacity;
         }
     }
 }

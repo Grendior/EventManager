@@ -4,24 +4,22 @@
 
 @{
     var userId = UserManager.GetUserId(User);
-    var isSigned = Model.Participants?.Any(x => x.UserId == userId);
+    var isSigned = Model.Participants?.FirstOrDefault(x => x.UserId == userId);
 }
-
 
 <div>
     <h2>
         @Model.Event.Title
     </h2>
-    
+
     <a class="btn btn-secondary" asp-area="Customer" asp-controller="EventParticipants" asp-action="Index"><i class="bi bi-arrow-left"></i> Back to List</a>
-    
-    @if (isSigned == true)
+    @if (isSigned is not null)
     {
-        <button type="button" onclick="signOut('@userId', '@Model.Event.Id')" class="btn btn-lg btn-warning">Sign out</button>
+        <button type="button" onclick="signOut('@userId', '@Model.Event.Id')" @Html.DisabledIf(isSigned.Status == AssignmentStatus.Declined) class="btn btn-lg btn-warning">Sign out</button>
     }
     else
     {
-        <button type="button" onclick="signIn('@Model.Event.Id')" class="btn btn-lg btn-success">Sign in</button>
+        <button type="button" onclick="signIn('@Model.Event.Id')" @Html.DisabledIf(Model.IsFull) class="btn btn-lg btn-success">Sign in</button>
     }
 </div>
 
@@ -32,7 +30,7 @@
 
 @if (User.IsInRole(SD.Role_Admin) && Model.Participants != null)
 {
-    <partial id="event-participants-table-pv" name="_EventParticipantsTable" model="Model.Participants" />
+    <partial id="event-participants-table-pv" name="_EventParticipantsTable" model="Model.Participants"/>
 }
 
 @section Scripts {
