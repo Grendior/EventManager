@@ -28,4 +28,8 @@
     <ProjectReference Include="..\EventManager.Utils\EventManager.Utils.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\event\" />
+  </ItemGroup>
+
 </Project>
