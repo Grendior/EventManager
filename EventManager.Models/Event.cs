@@ -20,5 +20,7 @@ namespace EventManager.Models
         [ForeignKey(nameof(CreatorId))]
         [ValidateNever]
         public ApplicationUser? Creator { get; set; }
+
+        public string? ImageUrl { get; set; }
     }
 }

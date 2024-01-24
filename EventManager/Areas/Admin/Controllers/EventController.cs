@@ -13,10 +13,12 @@ namespace EventManager.Areas.Admin.Controllers
     public class EventController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public EventController(IUnitOfWork unitOfWork)
+        public EventController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
@@ -43,7 +45,7 @@ namespace EventManager.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Upsert(Event eventObj)
+        public IActionResult Upsert(Event eventObj, IFormFile? file)
         {
             if (!ModelState.IsValid)
             {
@@ -51,8 +53,32 @@ namespace EventManager.Areas.Admin.Controllers
                 return View();
             }
 
+            var wwwRootPath = _webHostEnvironment.WebRootPath;
+            
             try
             {
+                if (file != null)
+                {
+                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var eventPath = Path.Combine(wwwRootPath, @"images\event");
+
+                    if (!string.IsNullOrEmpty(eventObj.ImageUrl))
+                    {
+                        var oldImagePath = Path.Combine(wwwRootPath, eventObj.ImageUrl.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+    
+                    using (var fileStream = new FileStream(Path.Combine(eventPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+    
+                    eventObj.ImageUrl = @"\images\event\" + fileName;
+                }
                 if (string.IsNullOrEmpty(eventObj.Id))
                 {
                     eventObj.Id = Guid.NewGuid().ToString();
@@ -100,6 +126,18 @@ namespace EventManager.Areas.Admin.Controllers
                 {
                     _unitOfWork.EventParticipant.RemoveRange(listOfEventParticipants);
                     _unitOfWork.Save();
+                }
+
+                // Delete image if exists
+                if(!string.IsNullOrEmpty(eventFromDb.ImageUrl)) 
+                {
+                    var wwwRootPath = _webHostEnvironment.WebRootPath;
+                    var oldImagePath = Path.Combine(wwwRootPath, eventFromDb.ImageUrl.TrimStart('\\'));
+
+                    if(System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
                 }
 
                 _unitOfWork.Event.Remove(eventFromDb);

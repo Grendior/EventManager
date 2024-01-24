@@ -32,7 +32,10 @@ namespace EventManager.DataAccess.DbInitializer
                     _dbContext.Database.Migrate();
                 }
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                // ignored
+            }
 
             if (!_roleManager.RoleExistsAsync(SD.Role_Customer).GetAwaiter().GetResult())
             {
@@ -55,9 +58,6 @@ namespace EventManager.DataAccess.DbInitializer
                     _userManager.AddToRoleAsync(user, SD.Role_Admin).GetAwaiter().GetResult();
                 }
             }
-
-            return;
-
         }
     }
 }
