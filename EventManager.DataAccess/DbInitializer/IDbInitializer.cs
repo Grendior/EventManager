@@ -8,6 +8,6 @@ namespace EventManager.DataAccess.DbInitializer
 {
     public interface IDbInitializer
     {
-        public void Initialize();
+        public Task Initialize();
     }
 }

@@ -23,7 +23,7 @@ namespace EventManager.DataAccess.DbInitializer
             _dbContext = dbContext;
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
             try
             {
@@ -42,8 +42,7 @@ namespace EventManager.DataAccess.DbInitializer
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Customer)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Company)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin)).GetAwaiter().GetResult();
-
-
+                
                 _userManager.CreateAsync(new ApplicationUser
                 {
                     UserName = "admin@dev.fiedorowicz.pl",
@@ -52,7 +51,7 @@ namespace EventManager.DataAccess.DbInitializer
                     LastName = "Fiedorowicz"
                 }, "Admin123!").GetAwaiter().GetResult();
 
-                var user = _dbContext.ApplicationUsers.FirstOrDefault(x => x.Email == "admin@dev.fiedorowicz.pl");
+                var user = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName == "admin@dev.fiedorowicz.pl");
                 if (user is not null)
                 {
                     _userManager.AddToRoleAsync(user, SD.Role_Admin).GetAwaiter().GetResult();
