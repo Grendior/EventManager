@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-	<FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\EventManager.DataAccess\EventManager.DataAccess.csproj" />
     <ProjectReference Include="..\EventManager.Models\EventManager.Models.csproj" />
     <ProjectReference Include="..\EventManager.Utils\EventManager.Utils.csproj" />
