@@ -48,10 +48,7 @@ namespace EventManager.Areas.Customer.Controllers
                 IsFull = _unitOfWork.EventParticipant.GetAllFilteredCount(x => x.EventId == eventObj.Id && x.Status == AssignmentStatus.Accepted) >= eventObj.Capacity
             };
 
-            if (User.IsInRole(SD.Role_Admin))
-            {
-                eventDetailsVm.Participants = [.. _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventId, "User")];
-            }
+            eventDetailsVm.Participants = [.. _unitOfWork.EventParticipant.GetAllFiltered(x => x.EventId == eventId, "User")];
 
             return View(eventDetailsVm);
         }
