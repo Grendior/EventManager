@@ -31,4 +31,17 @@
     <Folder Include="wwwroot\images\event\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="Areas\Company\Views\Event\Delete.cshtml" />
+    <AdditionalFiles Include="Areas\Company\Views\Event\Index.cshtml" />
+    <AdditionalFiles Include="Areas\Company\Views\Event\Upsert.cshtml" />
+    <AdditionalFiles Include="Areas\Company\Views\_ViewImports.cshtml" />
+    <AdditionalFiles Include="Areas\Company\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Areas\Company\Views\UserManagment\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Areas\Company\Views\UserManagment\Upsert.cshtml" />
+  </ItemGroup>
+
 </Project>

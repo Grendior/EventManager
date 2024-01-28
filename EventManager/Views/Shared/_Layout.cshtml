@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var isAdmin = User.IsInRole(SD.Role_Admin);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,19 +32,20 @@
                             <a class="nav-link" asp-area="Customer" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="Customer" asp-controller="EventParticipants" asp-action="Index">Event</a>
+                            <a class="nav-link" asp-area="Customer" asp-controller="EventParticipants" asp-action="Index">Events</a>
                         </li>
-                        @if (User.IsInRole(SD.Role_Admin))
+                        @if (isAdmin || User.IsInRole(SD.Role_Company))
                         {
-
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Managment</a>
                                 <div class="dropdown-menu">
-                                    <a class="nav-link" asp-area="Admin" asp-controller="Event" asp-action="Index">Events</a>
-
-                                    <a class="nav-link" asp-area="Admin" asp-controller="UserManagment" asp-action="Index">Users</a>
-
-                                    <div class="dropdown-divider"></div>
+                                    
+                                    <a class="nav-link" asp-area="@(isAdmin ? "Admin" : "Company")" asp-controller="Event" asp-action="Index">Events</a>
+                                    
+                                    @if (isAdmin)
+                                    {
+                                        <a class="nav-link" asp-area="Admin" asp-controller="UserManagment" asp-action="Index">Users</a>
+                                    }
                                 </div>
                             </li>
                         }

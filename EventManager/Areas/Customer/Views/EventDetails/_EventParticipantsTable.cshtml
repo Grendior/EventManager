@@ -1,22 +1,31 @@
 ﻿@model List<EventParticipant>
 
+@{
+    var applied = Model.Where(x => x.Status == AssignmentStatus.Applied).ToList();
+    var accepted = Model.Where(x => x.Status == AssignmentStatus.Accepted).ToList();
+    var reserved = Model.Where(x => x.Status == AssignmentStatus.Reserve).ToList();
+    var declined = Model.Where(x => x.Status == AssignmentStatus.Declined).ToList();
+}
+
 <table id="participants_table" class="table table-hover table-primary table-bordered">
     <thead>
-        <tr>
-            <th scope="col">First name</th>
+    <tr>
+        <th scope="col">First name</th>
 
-            <th scope="col">Last name</th>
+        <th scope="col">Last name</th>
 
-            <th scope="col">Actions</th>
-        </tr>
+        <th scope="col">Actions</th>
+    </tr>
     </thead>
 
     <tbody>
+    @if (applied.Any())
+    {
         <tr class="table-info">
             <td colspan="3" class="text-center">Applied</td>
         </tr>
 
-        @foreach (var item in Model.Where(x => x.Status == AssignmentStatus.Applied))
+        @foreach (var item in applied)
         {
             <tr>
                 <td>@item.User?.FirstName</td>
@@ -32,12 +41,14 @@
                 </td>
             </tr>
         }
-
+    }
+    @if (accepted.Any())
+    {
         <tr class="table-success">
             <td colspan="3" class="text-center">Accepted</td>
         </tr>
 
-        @foreach (var item in Model.Where(x => x.Status == AssignmentStatus.Accepted))
+        @foreach (var item in accepted)
         {
             <tr>
                 <td>@item.User?.FirstName</td>
@@ -51,12 +62,14 @@
                 </td>
             </tr>
         }
-
+    }
+    @if (reserved.Any())
+    {
         <tr class="table-warning">
             <td colspan="3" class="text-center">Reserved</td>
         </tr>
 
-        @foreach (var item in Model.Where(x => x.Status == AssignmentStatus.Reserve))
+        @foreach (var item in reserved)
         {
             <tr>
                 <td>@item.User?.FirstName</td>
@@ -70,12 +83,14 @@
                 </td>
             </tr>
         }
-
+    }
+    @if (declined.Any())
+    {
         <tr class="table-danger">
             <td colspan="3" class="text-center">Declined</td>
         </tr>
 
-        @foreach (var item in Model.Where(x => x.Status == AssignmentStatus.Declined))
+        @foreach (var item in declined)
         {
             <tr>
                 <td>@item.User?.FirstName</td>
@@ -89,5 +104,6 @@
                 </td>
             </tr>
         }
+    }
     </tbody>
 </table>

@@ -4,7 +4,7 @@
 
 @{
     var userId = UserManager.GetUserId(User);
-    var isSigned = Model.Participants?.FirstOrDefault(x => x.UserId == userId);
+    var isSigned = Model.Participants?.FirstOrDefault(x => x.UserId == userId && x.EventId == Model.Event.Id);
 }
 
 <div>
@@ -13,13 +13,16 @@
     </h2>
 
     <a class="btn btn-secondary" asp-area="Customer" asp-controller="EventParticipants" asp-action="Index"><i class="bi bi-arrow-left"></i> Back to List</a>
-    @if (isSigned is not null)
+    @if (User.IsInRole(SD.Role_Customer))
     {
-        <button type="button" onclick="signOut('@userId', '@Model.Event.Id')" @Html.DisabledIf(isSigned.Status == AssignmentStatus.Declined) class="btn btn-lg btn-warning">Sign out</button>
-    }
-    else
-    {
-        <button type="button" onclick="signIn('@Model.Event.Id')" @Html.DisabledIf(Model.IsFull) class="btn btn-lg btn-success">Sign in</button>
+        @if (isSigned is not null)
+        {
+            <button type="button" onclick="signOut('@userId', '@Model.Event.Id')" @Html.DisabledIf(isSigned.Status == AssignmentStatus.Declined) class="btn btn-lg btn-warning">Sign out</button>
+        }
+        else
+        {
+            <button type="button" onclick="signIn('@Model.Event.Id')" @Html.DisabledIf(Model.IsFull) class="btn btn-lg btn-success">Sign in</button>
+        }
     }
 </div>
 
@@ -28,14 +31,14 @@
     @if (!string.IsNullOrEmpty(Model.Event.ImageUrl))
     {
         <div>
-            <img src="@Model.Event.ImageUrl" width="100%" style="border-radius: 5px; border: 1px solid #BBB9B9" alt="image" />
+            <img src="@Model.Event.ImageUrl" width="100px" height="150px" style="border-radius: 5px; border: 1px solid #BBB9B9" alt="image"/>
         </div>
     }
     @Html.Raw(Model.Event.Description)
 </div>
 
 
-@if (User.IsInRole(SD.Role_Admin) && Model.Participants != null)
+@if ((User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Company)) && Model.Participants?.Any() == true)
 {
     <partial id="event-participants-table-pv" name="_EventParticipantsTable" model="Model.Participants"/>
 }
