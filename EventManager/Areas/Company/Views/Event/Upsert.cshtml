@@ -1,0 +1,77 @@
+﻿@model Event
+
+@inject UserManager<IdentityUser> userManager;
+
+@{
+    var updateOrCreate = string.IsNullOrEmpty(Model.Id) ? "Create" : "Update";
+    Model.CreatorId = userManager.GetUserId(User);
+}
+<form method="post" enctype="multipart/form-data">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+
+            <h2>@updateOrCreate Event</h2>
+            <hr/>
+        </div>
+        <div class="mb-3 card-body">
+            <input asp-for="Id" hidden/>
+            <input asp-for="ImageUrl" hidden/>
+            <input asp-for="CreatorId" hidden />
+            <div class="row">
+                <div class="col-10">
+                    <div class="form-group">
+                        <label class="col-form-label mt-4" for="Title">Title</label>
+                        <input asp-for="Title" type="text" class="form-control" placeholder="Title" id="Title">
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-form-label mt-4" for="Capacity">Capacity</label>
+                        <input asp-for="Capacity" type="number" class="form-control" placeholder="0" id="Capacity">
+                        <span asp-validation-for="Capacity" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-form-label mt-4">Image</label>
+                        <input type="file" name="file" class="form-control" placeholder="0" id="ImageUrl">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-form-label mt-4" for="Description">Description</label>
+                        <textarea asp-for="Description" type="text" class="form-control" placeholder="Description" id="Description"></textarea>
+                    </div>
+
+
+                </div>
+                
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="col-2">
+                        <img src="@Model.ImageUrl" width="100%" style="border-radius: 5px; border: 1px solid #BBB9B9" alt="image"/>
+                    </div>
+                }
+
+                <div class="pt-4 text-end">
+                    <button type="submit" class="btn btn-primary">@updateOrCreate</button>
+                    <a asp-controller="Event" asp-action="Index" class="btn btn-secondary">Back to the list</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial"/>
+
+        <script>
+            tinymce.init({
+                selector: 'textarea',
+                plugins: 'anchor autolink charmap codesample emoticons link lists searchreplace table visualblocks wordcount',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link table | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            });
+        </script>
+    }
+}

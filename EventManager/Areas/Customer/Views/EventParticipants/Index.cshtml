@@ -1,40 +1,51 @@
 ﻿@model EventsVM
 
-<div class="text-center">
+<div>
     <h1 class="display-4">Events</h1>
 </div>
 
-<table class="table table-hover table-primary table-bordered">
-    <thead>
-    <tr>
-        <th scope="col">Tittle</th>
-        <th scope="col">Capacity</th>
-        <th scope="col">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model.Events)
-    {
-        var isSigned = Model.EventParticipants.FirstOrDefault(x => x.UserId == Model.UserId && x.EventId == item.Id);
-        <tr>
-            <td>@item.Title</td>
-            <td>@(Model.EventParticipants.Count(x => x.EventId == item.Id && x.Status == AssignmentStatus.Accepted))/@(item.Capacity)</td>
-            <td class="text-center">
-                @if (isSigned is not null)
-                {
-                    <button type="button" onclick="signOut('@Model.UserId', '@item.Id')" @Html.DisabledIf(isSigned.Status == AssignmentStatus.Declined) class="btn btn-lg btn-warning">Sign out</button>
-                }
-                else
-                {
-                    var isFull = Model.EventParticipants.Count(x => x.EventId == item.Id && x.Status == AssignmentStatus.Accepted) >= item.Capacity;
-                    <button type="button" onclick="signIn('@item.Id')" @Html.DisabledIf(isFull) class="btn btn-lg btn-success">Sign in</button>
-                }
-                <a asp-area="Customer" asp-controller="EventDetails" asp-action="Index" asp-route-eventId="@item.Id" class="btn btn-lg btn-secondary">Details</a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+@if (!Model.Events.Any())
+{
+    <p>There is no events yet to join</p>
+}
+else
+{
+    <table class="table table-hover table-primary table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Tittle</th>
+                <th scope="col">Capacity</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        @foreach (var item in Model.Events)
+        {
+            var isSigned = Model.EventParticipants.FirstOrDefault(x => x.UserId == Model.UserId && x.EventId == item.Id);
+            <tr>
+                <td>@item.Title</td>
+                <td>@(Model.EventParticipants.Count(x => x.EventId == item.Id && x.Status == AssignmentStatus.Accepted))/@(item.Capacity)</td>
+                <td class="text-center">
+                    @if (User.IsInRole(SD.Role_Customer))
+                    {
+                        if (isSigned is not null)
+                        {
+                            <button type="button" onclick="signOut('@Model.UserId', '@item.Id')" @Html.DisabledIf(isSigned.Status == AssignmentStatus.Declined) class="btn btn-lg btn-warning">Sign out</button>
+                        }
+                        else
+                        {
+                            var isFull = Model.EventParticipants.Count(x => x.EventId == item.Id && x.Status == AssignmentStatus.Accepted) >= item.Capacity;
+                            <button type="button" onclick="signIn('@item.Id')" @Html.DisabledIf(isFull) class="btn btn-lg btn-success">Sign in</button>
+                        }
+                    }
+                    <a asp-area="Customer" asp-controller="EventDetails" asp-action="Index" asp-route-eventId="@item.Id" class="btn btn-lg btn-secondary">Details</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
 
 @section Scripts {
     <script type="text/javascript">
