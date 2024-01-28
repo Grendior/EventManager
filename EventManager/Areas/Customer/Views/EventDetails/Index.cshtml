@@ -4,7 +4,7 @@
 
 @{
     var userId = UserManager.GetUserId(User);
-    var isSigned = Model.Participants?.FirstOrDefault(x => x.UserId == userId && x.EventId == Model.Event.Id);
+    var isSigned = Model.Participants?.FirstOrDefault(x => x.UserId == userId);
 }
 
 <div>

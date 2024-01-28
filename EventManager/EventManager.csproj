@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="jQuery" Version="3.7.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.0" />
@@ -18,7 +19,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
-    <PackageReference Include="Postmark" Version="4.7.10" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +42,25 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Areas\Company\Views\UserManagment\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Areas\Company\Views\UserManagment\Upsert.cshtml" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\AUTHORS.txt" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\external\jquery\jquery.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\images\ui-icons_444444_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\images\ui-icons_555555_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\images\ui-icons_777620_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\images\ui-icons_777777_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\images\ui-icons_cc0000_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\images\ui-icons_ffffff_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\index.html" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\jquery-ui.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\jquery-ui.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\jquery-ui.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\jquery-ui.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\jquery-ui.structure.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\jquery-ui.structure.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\jquery-ui.theme.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\jquery-ui.theme.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\LICENSE.txt" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui-1.13.2.custom\jquery-ui-1.13.2.custom\package.json" />
   </ItemGroup>
 
 </Project>
