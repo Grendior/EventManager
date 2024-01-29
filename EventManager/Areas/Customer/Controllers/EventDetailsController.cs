@@ -98,7 +98,7 @@ namespace EventManager.Areas.Customer.Controllers
             if (user == null || string.IsNullOrEmpty(user.Email))
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { success = false, message = UserNotFound });
+                return Json(new { success = false, message = EmailNotFound });
             }
 
             var callbackUrl = Request.Scheme + "://" + Request.Host + Url.Action(nameof(Index), new { eventId = participation.EventId });

@@ -24,5 +24,6 @@
         public const string UserSuccessfullyDeleted = "User has been successfully deleted";
         public const string UserFailedCreateOrUpdate = "Something went wrong during saving user";
         public const string UserDeleteSomethingWrong = "Something went wrong while deleting an user";
+        public const string EmailNotFound = "Email not found";
     }
 }

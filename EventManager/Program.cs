@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using EventManager.DataAccess.DbInitializer;
+using EventManager.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

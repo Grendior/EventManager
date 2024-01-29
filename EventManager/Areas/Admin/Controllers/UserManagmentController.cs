@@ -93,10 +93,7 @@ namespace EventManager.Areas.Admin.Controllers
             user.FirstName = model.ApplicationUser.FirstName;
             user.LastName = model.ApplicationUser.LastName;
             user.Email = model.ApplicationUser.Email;
-
-            await _userStore.SetUserNameAsync(user, model.ApplicationUser.Email, CancellationToken.None);
-            await _emailStore.SetEmailAsync(user, model.ApplicationUser.Email, CancellationToken.None);
-
+            
             IdentityResult result;
             if (update)
             {
@@ -137,7 +134,10 @@ namespace EventManager.Areas.Admin.Controllers
 
                 TempData["success"] = UserSuccessfullyCreated;
             }
-
+        
+            await _userStore.SetUserNameAsync(user, model.ApplicationUser.Email, CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, model.ApplicationUser.Email, CancellationToken.None);
+            
             if (result.Succeeded)
             {
                 var role = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().SingleOrDefault();
@@ -158,6 +158,8 @@ namespace EventManager.Areas.Admin.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
+            
+            
 
             TempData["success"] = "";
             TempData["error"] = UserFailedCreateOrUpdate;
