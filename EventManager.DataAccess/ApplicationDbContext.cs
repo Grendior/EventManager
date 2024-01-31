@@ -20,9 +20,15 @@ namespace EventManager.DataAccess
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Event>().HasData(
-                new { Id = Guid.NewGuid().ToString(), Title = "Tytuł Wydarzenia", Date = DateTime.Now, StartTime = DateTime.Now, EndTime = DateTime.Now, Capacity = 30, Occupied = 0, ImageUrl = "" },
-                new { Id = Guid.NewGuid().ToString(), Title = "Tytuł Wydarzenia 2", Date = DateTime.Now, StartTime = DateTime.Now, EndTime = DateTime.Now, Capacity = 40, Occupied = 0, ImageUrl = "" },
-                new { Id = Guid.NewGuid().ToString(), Title = "Tytuł Wydarzenia 3", Date = DateTime.Now, StartTime = DateTime.Now, EndTime = DateTime.Now, Capacity = 50, Occupied = 0, ImageUrl = "" }
+                new
+                {
+                    Id = Guid.NewGuid().ToString(), Title = "Zajęcia boks",
+                    Description =
+                        "<h1>Zajęcia Bokserskie w Słupsku</h1>\n<p>Witaj na stronie poświęconej naszym zajęciom bokserskim w Słupsku! Jesteśmy zespołem pasjonat&oacute;w, kt&oacute;rzy razem trenują i rozwijają swoje umiejętności bokserskie.</p>\n<h2>Jak Zacząć?</h2>\n<p>Jeśli jesteś zainteresowany/a dołączeniem do naszych zajęć, zapisz się do wydarzenia lub przyjdź na jedno z trening&oacute;w, aby dowiedzieć się więcej.</p>\n<p>Zapraszamy do wsp&oacute;lnego rozwijania umiejętności bokserskich i czerpania radości z trening&oacute;w!</p>",
+                    Date = "2024-01-30 00:00:00.0000000", StartTime = DateTime.Now, EndTime = DateTime.Now,
+                    Capacity = 12, Occupied = 0,
+                    ImageUrl = @"\images\event\050665e9-bb54-4c15-98fc-482b95af60c9.jpg"
+                }
             );
         }
     }
