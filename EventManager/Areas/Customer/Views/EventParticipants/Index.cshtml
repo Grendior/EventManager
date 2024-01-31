@@ -15,6 +15,7 @@ else
             <tr>
                 <th scope="col">Tittle</th>
                 <th scope="col">Capacity</th>
+                <th scope="col">Date</th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
@@ -26,6 +27,7 @@ else
             <tr>
                 <td>@item.Title</td>
                 <td>@(Model.EventParticipants.Count(x => x.EventId == item.Id && x.Status == AssignmentStatus.Accepted))/@(item.Capacity)</td>
+                <td>@item.Date.ToString("dd.MM.yyyy")</td>
                 <td class="text-center">
                     @if (User.IsInRole(SD.Role_Customer))
                     {

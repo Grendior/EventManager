@@ -1,6 +1,6 @@
 ﻿@model Event
 @{
-    var updateOrCreate = string.IsNullOrEmpty(Model.Id) ? "Create" : "Update";
+    var updateOrCreate = string.IsNullOrEmpty(Model?.Id) ? "Create" : "Update";
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css"/>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -28,7 +28,7 @@
 
                     <div class="form-group">
                         <label asp-for="Date" class="col-form-label mt-4">Date</label>
-                        <input type="text" id="Date" name="Date" value="@Model.Date.ToString("dd.mm.yy")" class="datepicker form-control"/>
+                        <input type="text" id="Date" name="Date" value="@Model?.Date.ToString("dd.MM.yyyy")" class="datepicker form-control"/>
                         <span asp-validation-for="Date" class="text-danger"></span>
                     </div>
 

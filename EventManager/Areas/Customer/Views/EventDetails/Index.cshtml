@@ -17,24 +17,23 @@
     {
         @if (isSigned is not null)
         {
-            <button type="button" onclick="signOut('@userId', '@Model.Event.Id')" @Html.DisabledIf(isSigned.Status == AssignmentStatus.Declined) class="btn btn-lg btn-warning">Sign out</button>
+            <button type="button" onclick="signOut('@userId', '@Model.Event.Id')" @Html.DisabledIf(isSigned.Status == AssignmentStatus.Declined) class="btn btn-secondary btn-warning">Sign out</button>
         }
         else
         {
-            <button type="button" onclick="signIn('@Model.Event.Id')" @Html.DisabledIf(Model.IsFull) class="btn btn-lg btn-success">Sign in</button>
+            <button type="button" onclick="signIn('@Model.Event.Id')" @Html.DisabledIf(Model.IsFull) class="btn btn-secondary btn-success">Sign in</button>
         }
     }
 </div>
 
-<div class="container">
+<br />
 
+<div>
     @if (!string.IsNullOrEmpty(Model.Event.ImageUrl))
     {
-        <div>
-            <img src="@Model.Event.ImageUrl" width="100px" height="150px" style="border-radius: 5px; border: 1px solid #BBB9B9" alt="image"/>
-        </div>
+        <img src="@Model.Event.ImageUrl" width="500px" height="250px" style="border-radius: 5px; border: 1px solid #BBB9B9" alt="image"/>
     }
-    @Html.Raw(Model.Event.Description)
+        @Html.Raw(Model.Event.Description)
 </div>
 
 

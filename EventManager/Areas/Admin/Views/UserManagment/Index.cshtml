@@ -36,7 +36,7 @@
             <td>@item.FirstName</td>
             <td>@item.LastName</td>
             <td>@(string.Join(", ", UserManager.GetRolesAsync(item).GetAwaiter().GetResult()))</td>
-            <td>
+            <td class="text-center">
                 <a asp-action="Upsert" asp-route-userId="@item.Id" class="btn btn-secondary">Edit</a>
                 <a onclick="Delete('/admin/usermanagment/delete?userId=@item.Id')" class="btn btn-danger">Delete</a>
             </td>
