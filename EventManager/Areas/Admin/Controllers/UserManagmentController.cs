@@ -77,6 +77,15 @@ namespace EventManager.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Upsert(UserUpsertVM model)
         {
+            var roleList = _roleManager.Roles.Select(x => x.Name)
+                .Select(i =>
+                    new SelectListItem
+                    {
+                        Text = i,
+                        Value = i
+                    }
+                ).ToList();
+            model.RoleList = roleList;
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -93,7 +102,10 @@ namespace EventManager.Areas.Admin.Controllers
             user.FirstName = model.ApplicationUser.FirstName;
             user.LastName = model.ApplicationUser.LastName;
             user.Email = model.ApplicationUser.Email;
-            
+
+            await _userStore.SetUserNameAsync(user, model.ApplicationUser.Email, CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, model.ApplicationUser.Email, CancellationToken.None);
+
             IdentityResult result;
             if (update)
             {
@@ -134,22 +146,21 @@ namespace EventManager.Areas.Admin.Controllers
 
                 TempData["success"] = UserSuccessfullyCreated;
             }
-        
-            await _userStore.SetUserNameAsync(user, model.ApplicationUser.Email, CancellationToken.None);
-            await _emailStore.SetEmailAsync(user, model.ApplicationUser.Email, CancellationToken.None);
-            
+
             if (result.Succeeded)
             {
-                var role = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().SingleOrDefault();
+                var role = _userManager.GetRolesAsync(user).ConfigureAwait(false).GetAwaiter().GetResult()
+                    .SingleOrDefault();
+                if (role is not null && role == model.Role!)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
                 if (role is not null)
                 {
                     await _userManager.RemoveFromRoleAsync(user, role);
                 }
-
-                if (role != model.Role!)
-                {
-                    await _userManager.AddToRoleAsync(user, model.Role ?? SD.Role_Customer);
-                }
+                await _userManager.AddToRoleAsync(user, model.Role ?? SD.Role_Customer);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -158,8 +169,7 @@ namespace EventManager.Areas.Admin.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-            
-            
+
 
             TempData["success"] = "";
             TempData["error"] = UserFailedCreateOrUpdate;
