@@ -50,7 +50,7 @@ namespace EventManager.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Upsert(Event eventObj, IFormFile? file)
         {
-            eventObj.Date = eventObj.Date.ToUniversalTime();
+            eventObj.Date = DateTime.Now;
             
             if (!ModelState.IsValid)
             {
