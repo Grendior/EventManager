@@ -50,6 +50,8 @@ namespace EventManager.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Upsert(Event eventObj, IFormFile? file)
         {
+            eventObj.Date = eventObj.Date.ToUniversalTime();
+            
             if (!ModelState.IsValid)
             {
                 TempData["error"] = FillOutForm;
@@ -57,7 +59,7 @@ namespace EventManager.Areas.Admin.Controllers
             }
 
             var wwwRootPath = _webHostEnvironment.WebRootPath;
-            
+
             try
             {
                 if (file != null)
@@ -68,11 +70,12 @@ namespace EventManager.Areas.Admin.Controllers
 
                         await _fileService.DeleteAsync(oldImageName);
                     }
-                    
+
                     var responseFromBlob = await _fileService.UploadAsync(file);
-    
+
                     eventObj.ImageUrl = responseFromBlob.Blob.Uri;
                 }
+
                 if (string.IsNullOrEmpty(eventObj.Id))
                 {
                     eventObj.Id = Guid.NewGuid().ToString();
@@ -124,11 +127,11 @@ namespace EventManager.Areas.Admin.Controllers
 
                 // Delete image if exists
                 if (!string.IsNullOrEmpty(eventFromDb.ImageUrl))
-                    {
-                        var oldImageName = eventFromDb.ImageUrl.Split('/').Last();
+                {
+                    var oldImageName = eventFromDb.ImageUrl.Split('/').Last();
 
-                        await _fileService.DeleteAsync(oldImageName);
-                    }
+                    await _fileService.DeleteAsync(oldImageName);
+                }
 
                 _unitOfWork.Event.Remove(eventFromDb);
                 _unitOfWork.Save();
