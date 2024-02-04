@@ -7,6 +7,7 @@ using EventManager.Utils;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using EventManager.DataAccess.DbInitializer;
 using EventManager.Models;
+using EventManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = $"/Identity/Account/Logout";
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
+
+builder.Services.AddSingleton<FileService>();
 
 builder.Services.Configure<MailOptions>(options =>
 {
@@ -64,6 +67,7 @@ app.MapRazorPages();
 
 app.Run();
 
+return;
 
 void SeedDatabase()
 {

@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using EventManager.DataAccess.Repository.IRepository;
 using EventManager.Models;
+using EventManager.Services;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,13 @@ namespace EventManager.Areas.Admin.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly FileService _fileService;
 
-        public EventController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public EventController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, FileService fileService)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            _fileService = fileService;
         }
 
         public IActionResult Index()
@@ -45,7 +48,7 @@ namespace EventManager.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Upsert(Event eventObj, IFormFile? file)
+        public async Task<IActionResult> Upsert(Event eventObj, IFormFile? file)
         {
             if (!ModelState.IsValid)
             {
@@ -59,25 +62,16 @@ namespace EventManager.Areas.Admin.Controllers
             {
                 if (file != null)
                 {
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                    var eventPath = Path.Combine(wwwRootPath, @"images\event");
-
                     if (!string.IsNullOrEmpty(eventObj.ImageUrl))
                     {
-                        var oldImagePath = Path.Combine(wwwRootPath, eventObj.ImageUrl.TrimStart('\\'));
+                        var oldImageName = eventObj.ImageUrl.Split('/').Last();
 
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
+                        await _fileService.DeleteAsync(oldImageName);
                     }
+                    
+                    var responseFromBlob = await _fileService.UploadAsync(file);
     
-                    using (var fileStream = new FileStream(Path.Combine(eventPath, fileName), FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-    
-                    eventObj.ImageUrl = @"\images\event\" + fileName;
+                    eventObj.ImageUrl = responseFromBlob.Blob.Uri;
                 }
                 if (string.IsNullOrEmpty(eventObj.Id))
                 {
@@ -102,7 +96,7 @@ namespace EventManager.Areas.Admin.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(string? id)
+        public async Task<IActionResult> Delete(string? id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -129,16 +123,12 @@ namespace EventManager.Areas.Admin.Controllers
                 }
 
                 // Delete image if exists
-                if(!string.IsNullOrEmpty(eventFromDb.ImageUrl)) 
-                {
-                    var wwwRootPath = _webHostEnvironment.WebRootPath;
-                    var oldImagePath = Path.Combine(wwwRootPath, eventFromDb.ImageUrl.TrimStart('\\'));
-
-                    if(System.IO.File.Exists(oldImagePath))
+                if (!string.IsNullOrEmpty(eventFromDb.ImageUrl))
                     {
-                        System.IO.File.Delete(oldImagePath);
+                        var oldImageName = eventFromDb.ImageUrl.Split('/').Last();
+
+                        await _fileService.DeleteAsync(oldImageName);
                     }
-                }
 
                 _unitOfWork.Event.Remove(eventFromDb);
                 _unitOfWork.Save();
