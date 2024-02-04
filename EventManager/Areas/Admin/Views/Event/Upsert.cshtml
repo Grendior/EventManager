@@ -28,7 +28,7 @@
 
                     <div class="form-group">
                         <label asp-for="Date" class="col-form-label mt-4">Date</label>
-                        <input type="text" id="Date" name="Date" value="@Model?.Date.ToShortDateString()" class="datepicker form-control"/>
+                        <input type="text" id="Date" name="Date" value="@Model?.Date.ToString("dd.MM.yyyy")" class="datepicker form-control"/>
                         <span asp-validation-for="Date" class="text-danger"></span>
                     </div>
 
@@ -84,7 +84,7 @@
         <script>
             $(function () {
                 $('.datepicker').datepicker({
-                    dateFormat: 'mm/dd/yy',
+                    dateFormat: 'dd.mm.yy',
                 });
             });
         </script>
