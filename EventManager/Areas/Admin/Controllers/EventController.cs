@@ -50,8 +50,6 @@ namespace EventManager.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Upsert(Event eventObj, IFormFile? file)
         {
-            eventObj.Date = DateTime.Now;
-            
             if (!ModelState.IsValid)
             {
                 TempData["error"] = FillOutForm;
