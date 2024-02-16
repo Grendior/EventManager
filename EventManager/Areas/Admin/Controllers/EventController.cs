@@ -4,6 +4,7 @@ using EventManager.Models;
 using EventManager.Services;
 using EventManager.Utils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using static EventManager.Utils.TempDataInfos;
 
@@ -14,13 +15,13 @@ namespace EventManager.Areas.Admin.Controllers
     public class EventController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly FileService _fileService;
 
-        public EventController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, FileService fileService)
+        public EventController(IUnitOfWork unitOfWork, FileService fileService, UserManager<IdentityUser> userManager)
         {
             _unitOfWork = unitOfWork;
-            _webHostEnvironment = webHostEnvironment;
+            _userManager = userManager;
             _fileService = fileService;
         }
 
@@ -34,7 +35,11 @@ namespace EventManager.Areas.Admin.Controllers
         {
             if (string.IsNullOrEmpty(id))
             {
-                return View(new Event());
+                var eventObj = new Event
+                {
+                    CreatorId = _userManager.GetUserId(User)
+                };
+                return View(eventObj);
             }
 
             var eventFromDb = _unitOfWork.Event.Get(x => x.Id == id);
@@ -55,9 +60,7 @@ namespace EventManager.Areas.Admin.Controllers
                 TempData["error"] = FillOutForm;
                 return View();
             }
-
-            var wwwRootPath = _webHostEnvironment.WebRootPath;
-
+            
             try
             {
                 if (file != null)
