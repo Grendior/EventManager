@@ -1,5 +1,6 @@
 ﻿@{
     var isAdmin = User.IsInRole(SD.Role_Admin);
+    var isCompany = User.IsInRole(SD.Role_Company);
 }
 
 <!DOCTYPE html>
@@ -35,7 +36,11 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Customer" asp-controller="EventParticipants" asp-action="Index">Events</a>
                         </li>
-                        @if (isAdmin || User.IsInRole(SD.Role_Company))
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="@(isAdmin ? "Admin" : isCompany ? "Company" : "Customer")" asp-controller="Calendar" asp-action="Index">Calendar</a>
+                        </li>
+                        @if (isAdmin || isCompany)
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Management</a>
@@ -76,6 +81,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"> </script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="~/lib/jquery-ui-1.13.2.custom/jquery-ui-1.13.2.custom/jquery-ui.min.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js "></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

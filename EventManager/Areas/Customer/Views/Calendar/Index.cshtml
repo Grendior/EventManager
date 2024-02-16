@@ -1,0 +1,31 @@
+﻿
+<div id="calendar"></div>
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script>        
+    $(document).ready(function() {
+        var calendarEl = $('#calendar')[0];
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            eventColor: '#378',
+            events: function (info, successCallback, failureCallback) {
+                $.getJSON("@Url.Action("GetEvents", "Calendar")", function (locationsArray) {
+                    var result = $(locationsArray).map(function () {
+                        return {
+                            title: this.title,
+                            start: this.date,
+                            allDay: true
+                        };
+                    }).toArray();
+                    
+                    successCallback(result);
+                });
+            },
+
+        });
+        calendar.render();
+    });
+    </script>
+}
