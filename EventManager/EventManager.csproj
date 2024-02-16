@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AdditionalFiles Include="Areas\Company\Views\Calendar\Index.cshtml" />
     <AdditionalFiles Include="Areas\Company\Views\Event\Index.cshtml" />
     <AdditionalFiles Include="Areas\Company\Views\Event\Upsert.cshtml" />
     <AdditionalFiles Include="Areas\Company\Views\_ViewImports.cshtml" />
