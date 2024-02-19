@@ -47,14 +47,44 @@ namespace EventManager.DataAccess.DbInitializer
                 {
                     UserName = "admin@dev.fiedorowicz.pl",
                     Email = "admin@dev.fiedorowicz.pl",
-                    FirstName = "Szymon",
-                    LastName = "Fiedorowicz"
+                    FirstName = "Admin",
+                    LastName = "Admin"
                 }, "Admin123!").GetAwaiter().GetResult();
 
-                var user = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName == "admin@dev.fiedorowicz.pl");
+                var admin = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName == "admin@dev.fiedorowicz.pl");
+                if (admin is not null)
+                {
+                    _userManager.AddToRoleAsync(admin, SD.Role_Admin).GetAwaiter().GetResult();
+                }
+                
+                
+                _userManager.CreateAsync(new ApplicationUser
+                {
+                    UserName = "company@dev.fiedorowicz.pl",
+                    Email = "company@dev.fiedorowicz.pl",
+                    FirstName = "company",
+                    LastName = "company"
+                }, "Company123!").GetAwaiter().GetResult();
+
+                var company = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName == "company@dev.fiedorowicz.pl");
+                if (company is not null)
+                {
+                    _userManager.AddToRoleAsync(company, SD.Role_Company).GetAwaiter().GetResult();
+                }
+                
+                
+                _userManager.CreateAsync(new ApplicationUser
+                {
+                    UserName = "user@dev.fiedorowicz.pl",
+                    Email = "user@dev.fiedorowicz.pl",
+                    FirstName = "user",
+                    LastName = "user"
+                }, "User123!").GetAwaiter().GetResult();
+
+                var user = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName == "user@dev.fiedorowicz.pl");
                 if (user is not null)
                 {
-                    _userManager.AddToRoleAsync(user, SD.Role_Admin).GetAwaiter().GetResult();
+                    _userManager.AddToRoleAsync(user, SD.Role_Customer).GetAwaiter().GetResult();
                 }
             }
         }
