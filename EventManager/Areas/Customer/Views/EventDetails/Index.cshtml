@@ -58,7 +58,6 @@
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 data: { participationId: participationId, status: status },
                 success: function (result) {
-                    debugger;
                     sessionStorage.setItem(successKey,"true");
                     sessionStorage.setItem(infoKey, 'Status has been successfully updated');
                     location.reload();
